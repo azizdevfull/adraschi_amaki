@@ -44,6 +44,7 @@ class ProductResource extends JsonResource
             'compatibility' => $this->compatibility,
             'user' => $this->user->username,
             'views' => $this->views,
+            'likes' => $this->likes()->count(),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'photos' => $this->photos->map(function ($photo) {
