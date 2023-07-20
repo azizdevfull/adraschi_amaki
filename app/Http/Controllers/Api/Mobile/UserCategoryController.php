@@ -9,6 +9,7 @@ use App\Models\AdminUserCategory;
 use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\MainCategoryResource;
 
 class UserCategoryController extends Controller
 {
@@ -40,28 +41,12 @@ class UserCategoryController extends Controller
 
     public function productCategories()
     {
-        $categories = Auth()->user()->adminUserCategory->categories;
-        $data = [];
-
-        foreach ($categories as $category) {
-            $categoryData = [
-                'id' => $category->id,
-                'name' => $category->name,
-            ];
-
-            if(App::isLocale('ru')) {
-                $categoryData['name'] = $category->rus_name;
-            }else{
-                $categoryData['name'] = $category->name;
-            }
-
-            $data[] = $categoryData;
-        }
-
+        $categories = AdminUserCategory::all();
+        // dd($categories);
         return response()->json([
             'status' => true,
             'message' => __('category.all_success'),
-            'categories' => $data
+            'categories' => MainCategoryResource::collection($categories)
         ], 200);
     }
 
@@ -141,4 +126,5 @@ class UserCategoryController extends Controller
             ]
         ], 200);
     }
+
 }

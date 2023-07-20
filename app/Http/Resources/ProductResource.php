@@ -19,17 +19,15 @@ class ProductResource extends JsonResource
     public function toArray($request)
     {
 
-        if(App::isLocale('ru')){
-            $region_id = $this->region->rus_name;
-        }else{
-            $region_id = $this->region->name;
-        }
+
         if($this->category){
             $category_name = $this->category->name;
             
-                    if(App::isLocale('ru')){
-                        $category_name = $this->category->rus_name;
-                    }else{
+            if(App::isLocale('ru')){
+                $category_name = $this->category->rus_name;
+            }else if(App::isLocale('en')){
+                $category_name = $this->category->en_name;
+            }else{
                         $category_name = $this->category->name;
                     }
         }else{
@@ -42,13 +40,10 @@ class ProductResource extends JsonResource
             'price' => $this->price,
             'body' => $this->body,
             'category' => $category_name,
-            'region' => $region_id,
             'color' => $this->color,
             'compatibility' => $this->compatibility,
             'user' => $this->user->username,
             'views' => $this->views,
-            'longitude' => $this->longitude,
-            'latitude' => $this->latitude,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'photos' => $this->photos->map(function ($photo) {

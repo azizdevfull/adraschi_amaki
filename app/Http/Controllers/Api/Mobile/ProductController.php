@@ -70,11 +70,8 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'body' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'region_id' => 'required|exists:regions,id',
             'color' => 'nullable|string|max:255',
             'compatibility' => 'nullable|string',
-            'longitude' => 'numeric',
-            'latitude' => 'numeric',
             'photos' => 'array|max:4',
             'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
@@ -91,37 +88,27 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->body = $request->body;
         $product->category_id = $request->category_id;
-        $product->region_id = $request->region_id;
         $product->color = $request->color;
-        $product->longitude = $request->longitude;
-        $product->latitude = $request->latitude;
         $product->compatibility = $request->compatibility;
         $product->created_at = Carbon::now();
         $product->user_id = $user->id;
-        if ($user->product_number <= 0) {
-            return response([
-                'status' => false,
-                'message' => __('product.no_money')
-            ], 422);
-        }else if($user->blocked > 0){
-            return response([
-                'status' => false,
-                'message' => __('product.blocked')
-            ], 422);
-        }else{
-            $user->decrement('product_number');
-        }
         $product->save();
         $product->refresh();
 
+        $username = $user->username; // Assuming the username field exists in the User model
+        $folder = 'products/' . $username;
+    
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $result = Cloudinary::upload(fopen($photo->getRealPath(), 'r'));
+                $path = $photo->store($folder, 'public');
+    
                 $product->photos()->create([
-                    'url' => $result->getSecurePath()
+                    'url' => Storage::disk('public')->url($path),
+                    'public_id' => $folder, // Remove this line as it's specific to Cloudinary
                 ]);
             }
         }
+
         return response([
             'status' => true,
             'message' => __('product.create_success'),

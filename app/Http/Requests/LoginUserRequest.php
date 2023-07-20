@@ -27,7 +27,7 @@ class LoginUserRequest extends FormRequest
                 'required',
                 'string',
                 function ($attribute, $value, $fail) {
-                    if (!User::where('phone', $value)->orWhere('username', $value)->exists()) {
+                    if (!User::where('username', $value)->exists()) {
                         return $fail(__('auth.invalid_input'));
                     }
                 },

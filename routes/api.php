@@ -39,7 +39,7 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
     Route::get('/home', [HomeController::class, 'home']);
     Route::get('/categories', [UserCategoryController::class, 'index']);
-    Route::get('/product-categories', [UserCategoryController::class, 'productCategories'])->middleware('auth:sanctum');
+    Route::get('/product-categories', [UserCategoryController::class, 'productCategories']);
     Route::get('/categories/{category}', [UserCategoryController::class, 'showCategory']);
     Route::get('/regions', [RegionController::class, 'index']);
     Route::get('/regions/{region}', [RegionController::class, 'showRegion']);
