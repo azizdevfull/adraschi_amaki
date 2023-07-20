@@ -22,28 +22,21 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $perPage = 20;
-        $query = $request->query('q');
         $page = intval($request->query('page')) ?? 1;
         $offset = ($page - 1) * $perPage;
-
-        $products = Product::when($query, function($q, $query) {
-            return $q->where('title', 'like', "%$query%");
-        })
-        ->orderBy('created_at', 'desc') // Add this line to order by creation date
-        ->offset($offset)
-        ->limit($perPage)
-        ->get();
-
-        $total = Product::when($query, function($q, $query) {
-            return $q->where('title', 'like', "%$query%");
-        })
-        ->count();
-
+    
+        $products = Product::orderBy('created_at', 'desc')
+            ->offset($offset)
+            ->limit($perPage)
+            ->get();
+    
+        $total = Product::count();
+    
         $lastPage = ceil($total / $perPage);
-
+    
         $prevPageUrl = $page > 1 ? $request->fullUrlWithQuery(['page' => $page - 1]) : null;
         $nextPageUrl = $page < $lastPage ? $request->fullUrlWithQuery(['page' => $page + 1]) : null;
-
+    
         return response()->json([
             'status' => true,
             'message' => __('product.all_success'),
@@ -52,18 +45,18 @@ class ProductController extends Controller
                 '_links' => [
                     'prevPageUrl' => $prevPageUrl,
                     'nextPageUrl' => $nextPageUrl
-            ],
-            '_meta' =>[
-                'total' => $total,
-                'perPage' => $perPage,
-                'currentPage' => $page,
-                'lastPage' => $lastPage,
-            ]
-
+                ],
+                '_meta' =>[
+                    'total' => $total,
+                    'perPage' => $perPage,
+                    'currentPage' => $page,
+                    'lastPage' => $lastPage,
+                ]
+    
             ]
         ], 200);
     }
-
+    
 
 
 
