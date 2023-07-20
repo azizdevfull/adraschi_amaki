@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Mobile\Admin\PaymentSecretController;
 use App\Http\Controllers\Api\Mobile\Admin\AdminUserCategoryController;
 use App\Http\Controllers\Api\Mobile\Admin\AdminUsersController;
 use App\Http\Controllers\Api\Mobile\Admin\RegionController;
+use App\Http\Controllers\Api\Mobile\LikeController;
 use App\Http\Controllers\Api\Mobile\ProductSearchController;
 use App\Http\Controllers\Api\Mobile\UserCategoryController;
 
@@ -35,8 +36,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::middleware('localization')->prefix('mobile')->group(function () {
+    
     // Home Routes
-
     Route::get('/home', [HomeController::class, 'home']);
     Route::get('/categories', [UserCategoryController::class, 'index']);
     Route::get('/product-categories', [UserCategoryController::class, 'productCategories']);
@@ -45,6 +46,10 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
     Route::get('/regions/{region}', [RegionController::class, 'showRegion']);
     Route::get('/users-categories', [UserCategoryController::class, 'usercategories']);
     Route::get('/reklama', [ReklamaController::class, 'index']);
+
+    // Like Routes
+    Route::post('/products/{id}/like', [LikeController::class, 'likePost']);
+    Route::delete('/products/{id}/unlike', [LikeController::class, 'unlikePost']);
 
     // Full Auth Routes
     Route::post('/register', [AuthController::class, 'register']);
@@ -58,7 +63,6 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
     Route::post('/resend-code', [AuthController::class, 'resendSms']);
 
     // Search Routes
-
     Route::get('/search', [ProductSearchController::class, 'index']);
 
     // Products Routes

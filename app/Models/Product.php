@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Like;
 use App\Models\User;
 use App\Models\Photo;
 use App\Models\Region;
@@ -9,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
 use CloudinaryLabs\CloudinaryLaravel\MediaAlly;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -18,11 +20,6 @@ class Product extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function region()
-    {
-        return $this->belongsTo(Region::class);
     }
 
     public function category()
@@ -59,6 +56,10 @@ class Product extends Model
         }
     }
 
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
 
 
 }
