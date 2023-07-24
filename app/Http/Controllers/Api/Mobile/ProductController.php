@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use Carbon\Carbon;
+use App\Models\View;
 use App\Models\Region;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -119,7 +120,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request,string $id)
     {
         $product = Product::find($id);
         if (!$product) {
@@ -128,7 +129,22 @@ class ProductController extends Controller
                 'message' => __('product.not_found')
             ], 404);
         }
-        $product->increment('views');
+        $existingView = View::where([
+            'product_id' => $product->id,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+        ])->first();
+        if (!$existingView) {
+            // Create a new view record
+            $view = new View([
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->header('User-Agent'),
+            ]);
+
+            // Associate the view with the post
+            $product->views()->save($view);
+        }
+
         return response()->json([
             'status' => true,
             'data' => new ProductResource($product)

@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Models\Like;
 use App\Models\User;
+use App\Models\View;
 use App\Models\Photo;
 use App\Models\Region;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
 use CloudinaryLabs\CloudinaryLaravel\MediaAlly;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
@@ -61,5 +62,9 @@ class Product extends Model
         return $this->hasMany(Like::class);
     }
 
+    public function views(): HasMany
+    {
+        return $this->hasMany(View::class);
+    }
 
 }
