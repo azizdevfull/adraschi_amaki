@@ -18,6 +18,7 @@ return new class extends Migration
             $table->double('price');
             $table->string('sifat');
             $table->double('eni');
+            $table->double('gramm');
             $table->double('boyi');
             // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');            
             $table->string('color');

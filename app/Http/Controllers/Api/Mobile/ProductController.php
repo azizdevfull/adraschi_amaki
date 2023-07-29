@@ -71,6 +71,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'sifat' => 'required',
             'eni' => 'required|numeric',
+            'gramm' => 'required|numeric',
             'boyi' => 'required|numeric',
             'color' => 'required|string|max:255',
             // 'ishlab_chiqarish_turi' => 'required',
@@ -94,6 +95,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->sifat = $request->sifat;
         $product->eni = $request->eni;
+        $product->gramm = $request->gramm;
         $product->boyi = $request->boyi;
         $product->color = $request->color;
         $product->ishlab_chiqarish_turi_id = $request->ishlab_chiqarish_turi;
@@ -181,6 +183,7 @@ public function update(Request $request, string $id)
         'price' => 'numeric',
         'sifat' => 'required',
         'eni' => 'numeric',
+        'gramm' => 'numeric',
         'boyi' => 'numeric',
         'color' => 'string|max:255',
         // 'ishlab_chiqarish_turi' => 'required',
@@ -221,6 +224,7 @@ public function update(Request $request, string $id)
     $product->price = $request->input('price', $product->price);
     $product->sifat = $request->input('sifat', $product->sifat);
     $product->eni = $request->input('eni', $product->eni);
+    $product->gramm = $request->input('gramm', $product->gramm);
     $product->boyi = $request->input('boyi', $product->boyi);
     $product->color = $request->input('color', $product->color);
     $product->ishlab_chiqarish_turi_id = $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id);
