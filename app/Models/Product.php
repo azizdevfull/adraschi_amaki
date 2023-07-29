@@ -8,6 +8,7 @@ use App\Models\View;
 use App\Models\Photo;
 use App\Models\Region;
 use App\Models\Category;
+use App\Models\MahsulotTola;
 use Illuminate\Database\Eloquent\Model;
 use CloudinaryLabs\CloudinaryLaravel\MediaAlly;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Product extends Model
 {
     use HasFactory, MediaAlly;
-    protected $fillable = ['title', 'price', 'body', 'category_id', 'color', 'compatibility' ,'photos', 'views', 'user_id', 'region_id','longitude','latitude'];
+    protected $fillable = ['category_id','price','sifat','eni','boyi','color','ishlab_chiqarish_turi','mahsulot_turi','brand','user_id'];
 
     public function user()
     {
@@ -26,6 +27,11 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function mahsulotTola()
+    {
+        return $this->belongsTo(MahsulotTola::class);
     }
 
     public function photos()

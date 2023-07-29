@@ -34,14 +34,31 @@ class ProductResource extends JsonResource
             $category_name = null;
         }
 
+        if($this->mahsulot_tola_id){
+            $mahsulot_tola_name = $this->mahsulotTola->name;
+            
+            if(App::isLocale('ru')){
+                $mahsulot_tola_name = $this->mahsulotTola->rus_name;
+            }else if(App::isLocale('en')){
+                $mahsulot_tola_name = $this->mahsulotTola->en_name;
+            }else{
+                        $mahsulot_tola_name = $this->mahsulotTola->name;
+                    }
+        }else{
+            $mahsulot_tola_name = null;
+        }
+
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'price' => $this->price,
-            'body' => $this->body,
             'category' => $category_name,
+            'price' => $this->price,
+            'sifat' => $this->sifat,
+            'eni' => $this->eni,
+            'boyi' => $this->boyi,
             'color' => $this->color,
-            'compatibility' => $this->compatibility,
+            'ishlab_chiqarish_turi' => $this->ishlab_chiqarish_turi,
+            'mahsulot_tola' => $mahsulot_tola_name,
+            'brand' => $this->brand,
             'user' => $this->user->username,
             'views' => $this->views,
             'likes' => $this->likes()->count(),

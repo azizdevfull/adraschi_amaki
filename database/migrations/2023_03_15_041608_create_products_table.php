@@ -13,14 +13,19 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->double('price');
-            $table->longText('body');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');            
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('color')->nullable();
-            $table->text('compatibility')->nullable();
+            // $table->string('title');
+            $table->double('price');
+            $table->string('sifat');
+            $table->double('eni');
+            $table->double('boyi');
+            // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');            
+            $table->string('color');
+            $table->string('ishlab_chiqarish_turi');
+            // $table->string('mahsulot_turi');
+            $table->foreignId('mahsulot_tola_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('brand');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
 

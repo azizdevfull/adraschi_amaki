@@ -67,12 +67,16 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'body' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'color' => 'nullable|string|max:255',
-            'compatibility' => 'nullable|string',
+            'price' => 'required|numeric',
+            'sifat' => 'required',
+            'eni' => 'required|numeric',
+            'boyi' => 'required|numeric',
+            'color' => 'required|string|max:255',
+            'ishlab_chiqarish_turi' => 'required',
+            // 'mahsulot_turi' => 'required',
+            'mahsulot_tola_id' => 'required|exists:mahsulot_tolas,id',
+            'brand' => 'required',
             'photos' => 'array|max:4',
             'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
@@ -85,12 +89,15 @@ class ProductController extends Controller
 
         $user = Auth::user();
         $product = new Product();
-        $product->title = $request->title;
-        $product->price = $request->price;
-        $product->body = $request->body;
         $product->category_id = $request->category_id;
+        $product->price = $request->price;
+        $product->sifat = $request->sifat;
+        $product->eni = $request->eni;
+        $product->boyi = $request->boyi;
         $product->color = $request->color;
-        $product->compatibility = $request->compatibility;
+        $product->ishlab_chiqarish_turi = $request->ishlab_chiqarish_turi;
+        $product->mahsulot_tola_id = $request->mahsulot_tola_id;
+        $product->brand = $request->brand;
         $product->created_at = Carbon::now();
         $product->user_id = $user->id;
         $product->save();
@@ -280,60 +287,6 @@ public function update(Request $request, string $id)
             'status' => true,
             'message' => __('product.destroy_success')
         ], 200);
-    }
-    public function toggleFavorite($id)
-    {
-        $product = Product::find($id);
-        if(!$product){
-            return response()->json([
-                'status' => false,
-                'message' => __('product.not_found'),
-            ]);
-        }
-        $user = Auth::user();
-        if($user->favorites()->where('product_id', $product->id)->exists()){
-            $user->favorites()->detach($product);
-            return response()->json([
-                'status' => true,
-                'message' => __('product.remove_favourite')
-            ]);
-        } else {
-            $user->favorites()->attach($product);
-            return response()->json([
-                'status' => true,
-                'message' => __('product.add_favourite')
-            ]);
-        }
-    }
-
-
-    public function removeFavorite($id)
-    {
-        $product = Product::find($id);
-        if(!$product){
-            return response()->json([
-                'status' => false,
-                'message' => __('product.not_found'),
-            ]);
-        }
-        $user = auth()->user();
-        if(!$user){
-            return response()->json([
-                'status' => false,
-                'message' => __('auth.not_authenticated'),
-            ]);
-        }
-        if(!$user->favorites->contains($product)){
-            return response()->json([
-                'status' => false,
-                'message' => __('product.not_in_favorites'),
-            ]);
-        }
-        $user->favorites()->detach($product->id);
-        return response()->json([
-            'status' => true,
-            'message' => __('product.remove_favourite')
-        ]);
     }
 
 
