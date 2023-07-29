@@ -55,12 +55,12 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logoutUser'])->middleware('auth:sanctum');
-    Route::post('/delete-account', [AuthController::class, 'sendSmsDeleteAccount']);
-    Route::post('/confirm-delete-sms', [AuthController::class, 'deleteAccount']);
-    Route::post('/verify', [AuthController::class, 'verifySms']);
-    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-    Route::post('/resend-code', [AuthController::class, 'resendSms']);
+    // Route::post('/delete-account', [AuthController::class, 'sendSmsDeleteAccount']);
+    // Route::post('/confirm-delete-sms', [AuthController::class, 'deleteAccount']);
+    // Route::post('/verify', [AuthController::class, 'verifySms']);
+    // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    // Route::post('/resend-code', [AuthController::class, 'resendSms']);
 
     // Search Routes
     Route::get('/search', [ProductSearchController::class, 'index']);
