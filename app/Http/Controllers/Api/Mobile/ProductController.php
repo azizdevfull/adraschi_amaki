@@ -165,15 +165,29 @@ class ProductController extends Controller
 public function update(Request $request, string $id)
 {
     $validator = Validator::make($request->all(), [
-        'title' => 'string|max:255',
-        'price' => 'numeric',
-        'body' => 'string',
+        // 'title' => 'string|max:255',
+        // 'price' => 'numeric',
+        // 'body' => 'string',
+        // 'category_id' => 'exists:categories,id',
+        // 'region_id' => 'nullable|exists:regions,id',
+        // 'color' => 'nullable|string|max:255',
+        // 'compatibility' => 'nullable|string',
+        // 'longitude' => 'numeric',
+        // 'latitude' => 'numeric',
+        // 'photos' => 'array|max:4',
+        // 'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
         'category_id' => 'exists:categories,id',
-        'region_id' => 'nullable|exists:regions,id',
-        'color' => 'nullable|string|max:255',
-        'compatibility' => 'nullable|string',
-        'longitude' => 'numeric',
-        'latitude' => 'numeric',
+        'price' => 'numeric',
+        'sifat' => 'required',
+        'eni' => 'numeric',
+        'boyi' => 'numeric',
+        'color' => 'string|max:255',
+        // 'ishlab_chiqarish_turi' => 'required',
+        'ishlab_chiqarish_turi' => 'exists:ishlab_chiqarish_turis,id',
+        // 'mahsulot_turi' => 'required',
+        'mahsulot_tola_id' => 'exists:mahsulot_tolas,id',
+        'brand' => 'string',
         'photos' => 'array|max:4',
         'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
     ]);
@@ -203,50 +217,46 @@ public function update(Request $request, string $id)
         ], 403);
     }
 
-    $product->title = $request->input('title', $product->title);
-    $product->price = $request->input('price', $product->price);
-    $product->body = $request->input('body', $product->body);
     $product->category_id = $request->input('category_id', $product->category_id);
-
-    if($request->longitude){
-
-        $product->longitude = $request->longitude;
-    }
-    if($request->latitude){
-        $product->latitude = $request->latitude;
-    }
-
-    if ($request->has('region_id') && $request->input('region_id') !== null && $request->input('region_id') !== '') {
-        $region = Region::find($request->input('region_id'));
-        if (!$region) {
-            return response([
-                'status' => 'error',
-                'message' => __('region.not_found')
-            ], 404);
-        }
-        $product->region_id = $request->input('region_id');
-    }
+    $product->price = $request->input('price', $product->price);
+    $product->sifat = $request->input('sifat', $product->sifat);
+    $product->eni = $request->input('eni', $product->eni);
+    $product->boyi = $request->input('boyi', $product->boyi);
     $product->color = $request->input('color', $product->color);
-    $product->compatibility = $request->input('compatibility', $product->compatibility);
-    $product->updated_at = Carbon::now(); // Set the updated_at timestamp
+    $product->ishlab_chiqarish_turi_id = $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id);
+    $product->mahsulot_tola_id = $request->input('mahsulot_tola_id', $product->mahsulot_tola_id);
+    $product->brand = $request->input('brand', $product->brand);
 
     // $product->save();
 
-    if ($request->hasFile('photos')) {
-        // Delete existing photos for this product
-
-        foreach ($product->photos as $photo) {
-            Cloudinary::destroy($photo->id);
-            $photo->delete();
+        // $username = $user->username; // Assuming the username field exists in the User model
+        // $folder = 'products/' . $username;
+    
+        if ($request->hasFile('photos')) {
+            // Delete existing photos
+            foreach ($product->photos as $photo) {
+                // Extract the filename from the URL
+                $filename = basename($photo->url);
+                
+                // Delete the photo file from storage
+                Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
+                
+                // Delete the photo record from the database
+                $photo->delete();
+            }
+            $username = $user->username; // Assuming the username field exists in the User model
+            $folder = 'products/' . $username;
+            // Upload and store new photos
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store($folder, 'public');
+                
+                $product->photos()->create([
+                    'url' => Storage::disk('public')->url($path),
+                    'public_id' => $folder, // Remove this line as it's specific to Cloudinary
+                ]);
+            }
         }
-        // Add new photos for this product
-        foreach ($request->file('photos') as $photo) {
-            $result = Cloudinary::upload(fopen($photo->getRealPath(), 'r'));
-            $product->photos()->create([
-                'url' => $result->getSecurePath()
-            ]);
-        }
-    }
+    
 
     $product->save();
     $product->refresh(); // Refresh the model to get the updated timestamps
