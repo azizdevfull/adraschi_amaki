@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class MahsulotTola extends Seeder
+class MahsulotTolaSeeder extends Seeder
 {
     /**
      * Run the database seeds.

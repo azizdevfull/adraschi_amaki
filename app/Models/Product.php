@@ -9,6 +9,7 @@ use App\Models\Photo;
 use App\Models\Region;
 use App\Models\Category;
 use App\Models\MahsulotTola;
+use App\Models\ishlabChiqarishTuri;
 use Illuminate\Database\Eloquent\Model;
 use CloudinaryLabs\CloudinaryLaravel\MediaAlly;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Product extends Model
 {
     use HasFactory, MediaAlly;
-    protected $fillable = ['category_id','price','sifat','eni','boyi','color','ishlab_chiqarish_turi','mahsulot_turi','brand','user_id'];
+    protected $fillable = ['category_id','price','sifat','eni','boyi','color','ishlab_chiqarish_turi_id','mahsulot_tola_id','brand','user_id'];
 
     public function user()
     {
@@ -32,6 +33,11 @@ class Product extends Model
     public function mahsulotTola()
     {
         return $this->belongsTo(MahsulotTola::class);
+    }
+
+    public function ishlabChiqarishTuri()
+    {
+        return $this->belongsTo(ishlabChiqarishTuri::class);
     }
 
     public function photos()

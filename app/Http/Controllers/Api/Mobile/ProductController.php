@@ -73,7 +73,8 @@ class ProductController extends Controller
             'eni' => 'required|numeric',
             'boyi' => 'required|numeric',
             'color' => 'required|string|max:255',
-            'ishlab_chiqarish_turi' => 'required',
+            // 'ishlab_chiqarish_turi' => 'required',
+            'ishlab_chiqarish_turi' => 'required|exists:ishlab_chiqarish_turis,id',
             // 'mahsulot_turi' => 'required',
             'mahsulot_tola_id' => 'required|exists:mahsulot_tolas,id',
             'brand' => 'required',
@@ -95,7 +96,7 @@ class ProductController extends Controller
         $product->eni = $request->eni;
         $product->boyi = $request->boyi;
         $product->color = $request->color;
-        $product->ishlab_chiqarish_turi = $request->ishlab_chiqarish_turi;
+        $product->ishlab_chiqarish_turi_id = $request->ishlab_chiqarish_turi;
         $product->mahsulot_tola_id = $request->mahsulot_tola_id;
         $product->brand = $request->brand;
         $product->created_at = Carbon::now();

@@ -21,7 +21,8 @@ return new class extends Migration
             $table->double('boyi');
             // $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');            
             $table->string('color');
-            $table->string('ishlab_chiqarish_turi');
+            // $table->string('ishlab_chiqarish_turi');
+            $table->foreignId('ishlab_chiqarish_turi_id')->nullable()->constrained()->nullOnDelete();
             // $table->string('mahsulot_turi');
             $table->foreignId('mahsulot_tola_id')->nullable()->constrained()->nullOnDelete();
             $table->string('brand');

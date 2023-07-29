@@ -48,6 +48,20 @@ class ProductResource extends JsonResource
             $mahsulot_tola_name = null;
         }
 
+        if($this->ishlab_chiqarish_turi_id){
+            $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->name;
+            
+            if(App::isLocale('ru')){
+                $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->rus_name;
+            }else if(App::isLocale('en')){
+                $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->en_name;
+            }else{
+                        $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->name;
+                    }
+        }else{
+            $ishlab_chiqarish_turi_name = null;
+        }
+
         return [
             'id' => $this->id,
             'category' => $category_name,
@@ -56,7 +70,7 @@ class ProductResource extends JsonResource
             'eni' => $this->eni,
             'boyi' => $this->boyi,
             'color' => $this->color,
-            'ishlab_chiqarish_turi' => $this->ishlab_chiqarish_turi,
+            'ishlab_chiqarish_turi' => $ishlab_chiqarish_turi_name,
             'mahsulot_tola' => $mahsulot_tola_name,
             'brand' => $this->brand,
             'user' => $this->user->username,
