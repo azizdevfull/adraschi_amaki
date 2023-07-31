@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Mobile\Admin\PaymentSecretController;
 use App\Http\Controllers\Api\Mobile\Admin\AdminUserCategoryController;
 use App\Http\Controllers\Api\Mobile\Admin\AdminUsersController;
 use App\Http\Controllers\Api\Mobile\Admin\RegionController;
+use App\Http\Controllers\Api\Mobile\IshlabChiqarishController;
 use App\Http\Controllers\Api\Mobile\LikeController;
 use App\Http\Controllers\Api\Mobile\ProductSearchController;
 use App\Http\Controllers\Api\Mobile\UserCategoryController;
@@ -39,6 +40,7 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
     
     // Home Routes
     Route::get('/home', [HomeController::class, 'home']);
+    Route::get('/ishlab-chiqarishlar', [IshlabChiqarishController::class, 'index']);
     Route::get('/categories', [UserCategoryController::class, 'index']);
     Route::get('/product-categories', [UserCategoryController::class, 'productCategories']);
     Route::get('/categories/{category}', [UserCategoryController::class, 'showCategory']);
