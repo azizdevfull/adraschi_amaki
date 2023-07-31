@@ -30,7 +30,6 @@ class ReklamaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required|exists:categories,id',
             'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -42,7 +41,6 @@ class ReklamaController extends Controller
         }
 
         $reklama = new Reklama();
-        $reklama->category_id = $request->category_id;
         $reklama->save();
 
         if ($request->hasFile('images')) {
@@ -85,7 +83,6 @@ class ReklamaController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required|exists:categories,id',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
     
@@ -118,7 +115,6 @@ class ReklamaController extends Controller
         }
         
         // update other fields if needed
-        $reklama->category_id = $request->category_id;
         $reklama->update($request->except('images'));
     
         return response([

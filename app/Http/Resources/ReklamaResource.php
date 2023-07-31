@@ -15,19 +15,8 @@ class ReklamaResource extends JsonResource
      */
     public function toArray($request)
     {
-        if($this->category_id){
-            $categories = Category::all();
-            foreach ($categories as $category) {
-                if ($this->category_id == $category->id) {
-                    $category_id = $category->name;
-                }
-            }
-        } else {
-            $category_id = null;
-        }
         return [
             'id' => $this->id,
-            'category' => $category_id,
             'images' => $this->imagesReklama->map(function ($image) {
                 return $image->url;
             }),

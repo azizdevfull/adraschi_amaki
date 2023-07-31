@@ -38,7 +38,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::middleware('localization')->prefix('mobile')->group(function () {
-    
+
+    // Reklama Routes
+    Route::apiResource('reklama', ReklamaController::class);
+    Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
+
     // Home Routes
     Route::get('/home', [HomeController::class, 'home']);
     Route::get('/ishlab-chiqarishlar', [IshlabChiqarishController::class, 'index']);
@@ -75,7 +79,7 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
 
-        Route::get('/users/favorites', [ProfileController::class,'favourites']);
+        Route::get('/users/favorites', [ProfileController::class, 'favourites']);
 
         Route::post('/products', [ProductController::class, 'store']);
         Route::post('/pay', [PaymentController::class, 'pay']);
@@ -84,8 +88,7 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
         Route::patch('/products/{product}', [ProductController::class, 'update']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
         Route::post('/products/{product}/favorite', [ProductController::class, 'toggleFavorite']);
-        Route::delete('/products/{product}/favorite', [ProductController::class,'removeFavorite']);
-
+        Route::delete('/products/{product}/favorite', [ProductController::class, 'removeFavorite']);
     });
 
     // Profile Routes
@@ -109,7 +112,4 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
         Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
         Route::apiResource('payment-secrets', PaymentSecretController::class);
     });
-
-
-
 });
