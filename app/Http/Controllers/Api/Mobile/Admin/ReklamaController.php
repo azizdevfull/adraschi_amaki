@@ -6,6 +6,7 @@ use App\Models\Reklama;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReklamaResource;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
@@ -42,15 +43,17 @@ class ReklamaController extends Controller
 
         $reklama = new Reklama();
         $reklama->save();
-
+        $folder = 'reklama_images/';
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $result = Cloudinary::upload(fopen($image->getRealPath(), 'r'));
+                $path = $image->store($folder, 'public');
+
                 $reklama->imagesReklama()->create([
-                    'url' => $result->getSecurePath()
+                    'url' => Storage::disk('public')->url($path),
                 ]);
             }
         }
+
         return response([
             'status' => true,
             'message' => __('reklama.create_success'),
@@ -65,14 +68,14 @@ class ReklamaController extends Controller
     {
         $reklama = Reklama::find($id);
 
-        if(!$reklama){
+        if (!$reklama) {
             return response()->json([
-               'status' => 'error',
-               'message' => __('reklama.not_found')
+                'status' => 'error',
+                'message' => __('reklama.not_found')
             ], 404);
         }
         return response()->json([
-           'status' => true,
+            'status' => true,
             'data' => new ReklamaResource($reklama)
         ], 200);
     }
@@ -85,38 +88,61 @@ class ReklamaController extends Controller
         $validator = Validator::make($request->all(), [
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
-    
+
         if ($validator->fails()) {
             return response([
                 'status' => 'error',
                 'message' => $validator->errors()
             ], 422);
         }
-    
+
         $reklama = Reklama::find($id);
-        if(!$reklama){
+        if (!$reklama) {
             return response([
-               'status' => 'error',
-               'message' => __('reklama.not_found')
+                'status' => 'error',
+                'message' => __('reklama.not_found')
             ], 404);
         }
-      
+
+        // if ($request->hasFile('images')) {
+        //     // delete old images if present
+        //     $reklama->imagesReklama()->delete();
+
+        //     // upload and save new images
+        //     foreach ($request->file('images') as $image) {
+        //         $result = Cloudinary::upload(fopen($image->getRealPath(), 'r'));
+        //         $reklama->imagesReklama()->create([
+        //             'url' => $result->getSecurePath()
+        //         ]);
+        //     }
+        // }
         if ($request->hasFile('images')) {
-            // delete old images if present
-            $reklama->imagesReklama()->delete();
-            
-            // upload and save new images
+            // Delete existing photos
+            foreach ($reklama->imagesReklama as $image) {
+                // Extract the filename from the URL
+                $filename = basename($image->url);
+                
+                // Delete the image file from storage
+                Storage::disk('public')->delete('reklama_images/' . $filename);
+                
+                // Delete the image record from the database
+                $image->delete();
+            }
+            // $username = $user->username; // Assuming the username field exists in the User model
+            $folder = 'reklama_images/';
+            // Upload and store new photos
             foreach ($request->file('images') as $image) {
-                $result = Cloudinary::upload(fopen($image->getRealPath(), 'r'));
+                $path = $image->store($folder, 'public');
+                
                 $reklama->imagesReklama()->create([
-                    'url' => $result->getSecurePath()
+                    'url' => Storage::disk('public')->url($path),
                 ]);
             }
         }
-        
+
         // update other fields if needed
         $reklama->update($request->except('images'));
-    
+
         return response([
             'status' => true,
             'message' => __('reklama.update.success'),
@@ -130,24 +156,27 @@ class ReklamaController extends Controller
     public function destroy(string $id)
     {
         $reklama = Reklama::find($id);
-        if(!$reklama){
+        if (!$reklama) {
             return response([
-              'status' => 'error',
-              'message' => __('reklama.not_found')
+                'status' => 'error',
+                'message' => __('reklama.not_found')
             ], 404);
         }
-        // delete the associated images from cloudinary
-        // foreach ($reklama->imagesReklama as $image) {
-        //     Cloudinary::destroy($image->public_id);
-        // }
-    
-        // delete the Reklama resource
+        foreach ($reklama->imagesReklama as $image) {
+            // Extract the filename from the URL
+            $filename = basename($image->url);
+            
+            // Delete the image file from storage
+            Storage::disk('public')->delete('reklama_images/' . $filename);
+            
+            // Delete the image record from the database
+            $image->delete();
+        }
         $reklama->delete();
-    
+
         return response([
             'status' => true,
             'message' => __('reklama.destroy_success')
         ], 200);
     }
-    
 }

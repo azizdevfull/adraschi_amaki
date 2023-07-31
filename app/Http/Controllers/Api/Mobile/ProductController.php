@@ -295,7 +295,16 @@ public function update(Request $request, string $id)
                 'message' => __('product.no_access_delete')
             ], 403);
         }
-
+        foreach ($product->photos as $photo) {
+            // Extract the filename from the URL
+            $filename = basename($photo->url);
+            
+            // Delete the photo file from storage
+            Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
+            
+            // Delete the photo record from the database
+            $photo->delete();
+        }
         $product->delete();
 
         return response([

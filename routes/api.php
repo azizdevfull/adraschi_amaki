@@ -39,10 +39,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('localization')->prefix('mobile')->group(function () {
 
-    // Reklama Routes
-    Route::apiResource('reklama', ReklamaController::class);
-    Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
-
     // Home Routes
     Route::get('/home', [HomeController::class, 'home']);
     Route::get('/ishlab-chiqarishlar', [IshlabChiqarishController::class, 'index']);
@@ -78,6 +74,11 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
     Route::get('/products/{product}', [ProductController::class, 'show']);
 
     Route::middleware('auth:sanctum')->group(function () {
+
+        // Reklama Routes
+        Route::apiResource('reklama', ReklamaController::class);
+        Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
+
 
         Route::get('/users/favorites', [ProfileController::class, 'favourites']);
 
