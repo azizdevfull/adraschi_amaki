@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\Like;
 use App\Models\User;
-use App\Models\View;
 use App\Models\Photo;
 use App\Models\Region;
 use App\Models\Category;
@@ -73,11 +72,6 @@ class Product extends Model
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
-    }
-
-    public function views(): HasMany
-    {
-        return $this->hasMany(View::class);
     }
 
     public function ghost_views(): HasMany
