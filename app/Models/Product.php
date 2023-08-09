@@ -8,6 +8,7 @@ use App\Models\View;
 use App\Models\Photo;
 use App\Models\Region;
 use App\Models\Category;
+use App\Models\GhostViews;
 use App\Models\MahsulotTola;
 use App\Models\ishlabChiqarishTuri;
 use Illuminate\Database\Eloquent\Model;
@@ -77,6 +78,11 @@ class Product extends Model
     public function views(): HasMany
     {
         return $this->hasMany(View::class);
+    }
+
+    public function ghost_views(): HasMany
+    {
+        return $this->hasMany(GhostViews::class);
     }
 
 }

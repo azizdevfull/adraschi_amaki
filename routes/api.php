@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Mobile\Admin\PaymentSecretController;
 use App\Http\Controllers\Api\Mobile\Admin\AdminUserCategoryController;
 use App\Http\Controllers\Api\Mobile\Admin\AdminUsersController;
 use App\Http\Controllers\Api\Mobile\Admin\RegionController;
+use App\Http\Controllers\Api\Mobile\GhostViewsController;
 use App\Http\Controllers\Api\Mobile\IshlabChiqarishController;
 use App\Http\Controllers\Api\Mobile\LikeController;
 use App\Http\Controllers\Api\Mobile\MahsulotTolaController;
@@ -38,7 +39,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::middleware('localization')->prefix('mobile')->group(function () {
-
+    
+    // Ghost routes
+    Route::get('/last-views', [GhostViewsController::class, 'index']);
+    
     // Home Routes
     Route::get('/home', [HomeController::class, 'home']);
     Route::get('/ishlab-chiqarishlar', [IshlabChiqarishController::class, 'index']);

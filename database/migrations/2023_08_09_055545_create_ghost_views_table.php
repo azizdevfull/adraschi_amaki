@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('views', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('ghost_views', function (Blueprint $table) {
+            $table->id();
+            $table->string('ip');
             $table->unsignedBigInteger('product_id');
-            $table->string('ip_address');
             $table->string('user_agent');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->timestamps();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('views');
+        Schema::dropIfExists('ghost_views');
     }
 };

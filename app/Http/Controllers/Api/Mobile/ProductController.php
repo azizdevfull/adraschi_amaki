@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProductResource;
+use App\Models\GhostViews;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -139,20 +140,20 @@ class ProductController extends Controller
                 'message' => __('product.not_found')
             ], 404);
         }
-        $existingView = View::where([
+        $existingView = GhostViews::where([
             'product_id' => $product->id,
-            'ip_address' => $request->ip(),
+            'ip' => $request->ip(),
             'user_agent' => $request->header('User-Agent'),
         ])->first();
         if (!$existingView) {
             // Create a new view record
-            $view = new View([
-                'ip_address' => $request->ip(),
+            $view = new GhostViews([
+                'ip' => $request->ip(),
                 'user_agent' => $request->header('User-Agent'),
             ]);
 
             // Associate the view with the post
-            $product->views()->save($view);
+            $product->ghost_views()->save($view);
         }
 
         return response()->json([
