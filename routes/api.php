@@ -76,12 +76,12 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
     // Products Routes
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{product}', [ProductController::class, 'show']);
+    // Reklama Routes
+    Route::apiResource('reklama', ReklamaController::class);
+    Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
 
     Route::middleware('auth:sanctum')->group(function () {
 
-        // Reklama Routes
-        Route::apiResource('reklama', ReklamaController::class);
-        Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
 
 
         Route::get('/users/favorites', [ProfileController::class, 'favourites']);
