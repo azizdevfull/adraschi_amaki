@@ -74,9 +74,9 @@ class ProductResource extends JsonResource
             'mahsulot_tola' => $mahsulot_tola_name,
             'brand' => $this->brand,
             'user' => $this->user->username,
-            'views' => $this->views,
+            'views' => $this->ghost_views,
             'likes' => $this->likes()->count(),
-            'views' => $this->views()->count(),
+            'views' => $this->ghost_views()->count(),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'photos' => $this->photos->map(function ($photo) {
