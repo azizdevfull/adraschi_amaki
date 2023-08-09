@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use Carbon\Carbon;
-use App\Models\View;
 use App\Models\Region;
 use App\Models\Product;
 use Illuminate\Http\Request;
