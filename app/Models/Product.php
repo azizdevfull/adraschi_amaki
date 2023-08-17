@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Product extends Model
 {
     use HasFactory, MediaAlly;
-    protected $fillable = ['category_id','price','sifat','eni','gramm','boyi','color','ishlab_chiqarish_turi_id','mahsulot_tola_id','brand','user_id'];
+    protected $fillable = ['category_id','discount','price','sifat','eni','gramm','boyi','color','ishlab_chiqarish_turi_id','mahsulot_tola_id','brand','user_id'];
 
     public function user()
     {

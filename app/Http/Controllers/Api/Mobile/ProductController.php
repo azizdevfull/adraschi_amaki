@@ -69,6 +69,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric',
+            'discount' => 'nullable|numeric',
             'sifat' => 'required',
             'eni' => 'required|numeric',
             'gramm' => 'required|numeric',
@@ -93,6 +94,7 @@ class ProductController extends Controller
         $product = new Product();
         $product->category_id = $request->category_id;
         $product->price = $request->price;
+        $product->discount = $request->discount;
         $product->sifat = $request->sifat;
         $product->eni = $request->eni;
         $product->gramm = $request->gramm;
@@ -181,6 +183,7 @@ public function update(Request $request, string $id)
 
         'category_id' => 'exists:categories,id',
         'price' => 'numeric',
+        'discount' => 'nullable|numeric',
         'sifat' => 'required',
         'eni' => 'numeric',
         'gramm' => 'numeric',
@@ -222,6 +225,7 @@ public function update(Request $request, string $id)
 
     $product->category_id = $request->input('category_id', $product->category_id);
     $product->price = $request->input('price', $product->price);
+    $product->discount = $request->input('discount', $product->discount);
     $product->sifat = $request->input('sifat', $product->sifat);
     $product->eni = $request->input('eni', $product->eni);
     $product->gramm = $request->input('gramm', $product->gramm);

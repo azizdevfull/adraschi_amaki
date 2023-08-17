@@ -11,7 +11,7 @@ class GhostViews extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['ip','user_agent','product_id'];
+    protected $fillable = ['ip', 'user_agent', 'product_id'];
 
     public function product(): BelongsTo
     {
