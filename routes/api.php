@@ -113,7 +113,7 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
         Route::apiResource('products', AdminProductsController::class);
         Route::post('users/{user}', [AdminUsersController::class, 'update']);
         Route::apiResource('users', AdminUsersController::class);
-        Route::apiResource('reklama', ReklamaController::class);
+        // Route::apiResource('reklama', ReklamaController::class);
         Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
         Route::apiResource('payment-secrets', PaymentSecretController::class);
     });
