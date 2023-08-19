@@ -23,7 +23,6 @@ class ProductResource extends JsonResource
             'category' => $this->getLocalizedCategoryName(),
             'price' => $this->price,
             'discount' => $this->discount,
-            'sifat' => $this->sifat,
             'eni' => $this->eni,
             'boyi' => $this->boyi,
             'size' => $this->size,
