@@ -18,72 +18,62 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-
-
-        if($this->category){
-            $category_name = $this->category->name;
-            
-            if(App::isLocale('ru')){
-                $category_name = $this->category->rus_name;
-            }else if(App::isLocale('en')){
-                $category_name = $this->category->en_name;
-            }else{
-                        $category_name = $this->category->name;
-                    }
-        }else{
-            $category_name = null;
-        }
-
-        if($this->mahsulot_tola_id){
-            $mahsulot_tola_name = $this->mahsulotTola->name;
-            
-            if(App::isLocale('ru')){
-                $mahsulot_tola_name = $this->mahsulotTola->rus_name;
-            }else if(App::isLocale('en')){
-                $mahsulot_tola_name = $this->mahsulotTola->en_name;
-            }else{
-                        $mahsulot_tola_name = $this->mahsulotTola->name;
-                    }
-        }else{
-            $mahsulot_tola_name = null;
-        }
-
-        if($this->ishlab_chiqarish_turi_id){
-            $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->name;
-            
-            if(App::isLocale('ru')){
-                $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->rus_name;
-            }else if(App::isLocale('en')){
-                $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->en_name;
-            }else{
-                        $ishlab_chiqarish_turi_name = $this->ishlabChiqarishTuri->name;
-                    }
-        }else{
-            $ishlab_chiqarish_turi_name = null;
-        }
-
         return [
             'id' => $this->id,
-            'category' => $category_name,
+            'category' => $this->getLocalizedCategoryName(),
             'price' => $this->price,
             'discount' => $this->discount,
             'sifat' => $this->sifat,
             'eni' => $this->eni,
             'boyi' => $this->boyi,
+            'size' => $this->size,
             'color' => $this->color,
-            'ishlab_chiqarish_turi' => $ishlab_chiqarish_turi_name,
-            'mahsulot_tola' => $mahsulot_tola_name,
+            'ishlab_chiqarish_turi' => $this->getLocalizedIshlabChiqarishTuriName(),
+            'mahsulot_tola' => $this->getLocalizedMahsulotTolaName(),
             'brand' => $this->brand,
             'user' => $this->user->username,
-            'views' => $this->ghost_views,
             'likes' => $this->likes()->count(),
             'views' => $this->ghost_views()->count(),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
-            'photos' => $this->photos->map(function ($photo) {
-                return $photo->url;
-            }),
-            'owner' => new ProfileResource($this->user)
+            'photos' => $this->photos->map(fn($photo) => $photo->url),
+            'owner' => new ProfileResource($this->user),
         ];
     }
+    
+    protected function getLocalizedCategoryName()
+    {
+        return $this->getLocalizedAttribute('category', 'name');
+    }
+    
+    protected function getLocalizedIshlabChiqarishTuriName()
+    {
+        return $this->getLocalizedAttribute('ishlabChiqarishTuri', 'name');
+    }
+    
+    protected function getLocalizedMahsulotTolaName()
+    {
+        return $this->getLocalizedAttribute('mahsulotTola', 'name');
+    }
+    
+    protected function getLocalizedAttribute($relation, $attribute)
+    {
+        $relationModel = $this->$relation;
+        
+        if (!$relationModel) {
+            return null;
+        }
+        
+        $localizedAttribute = $attribute;
+        $locale = App::getLocale();
+        
+        if ($locale === 'ru' && isset($relationModel->rus_name)) {
+            $localizedAttribute = 'rus_name';
+        } elseif ($locale === 'en' && isset($relationModel->en_name)) {
+            $localizedAttribute = 'en_name';
+        }
+        
+        return $relationModel->$localizedAttribute;
+    }
+    
 }
