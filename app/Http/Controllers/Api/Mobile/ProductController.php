@@ -291,14 +291,14 @@ public function update(Request $request, string $id)
             ], 404);
         }
 
-        $user = Auth::user();
+       // $user = Auth::user();
 
-        if ($product->user_id !== $user->id) {
-            return response([
-                'status' => 'error',
-                'message' => __('product.no_access_delete')
-            ], 403);
-        }
+        //if ($product->user_id !== $user->id) {
+          //  return response([
+            //    'status' => 'error',
+              //  'message' => __('product.no_access_delete')
+            //], 403);
+        //}
         foreach ($product->photos as $photo) {
             // Extract the filename from the URL
             $filename = basename($photo->url);
