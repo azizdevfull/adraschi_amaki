@@ -26,6 +26,7 @@ class ProductResource extends JsonResource
             'eni' => $this->eni,
             'boyi' => $this->boyi,
             'size' => $this->size,
+            'gramm' => $this->gramm,
             'color' => $this->color,
             'ishlab_chiqarish_turi' => $this->getLocalizedIshlabChiqarishTuriName(),
             'mahsulot_tola' => $this->getLocalizedMahsulotTolaName(),
