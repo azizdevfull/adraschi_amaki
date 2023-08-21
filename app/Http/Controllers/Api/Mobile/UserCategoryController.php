@@ -25,7 +25,10 @@ class UserCategoryController extends Controller
 
             if(App::isLocale('ru')) {
                 $categoryData['name'] = $category->rus_name;
-            }else{
+            }else if(App::isLocale('en')) {
+                $categoryData['name'] = $category->en_name;
+            }
+            else{
                 $categoryData['name'] = $category->name;
             }
 
