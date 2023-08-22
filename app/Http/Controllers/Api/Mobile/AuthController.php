@@ -51,7 +51,7 @@ class AuthController extends Controller
         // Qolgan kodlar
         $code = mt_rand(10000, 99999);
 
-        $eskiz = new Eskiz();
+        $eskiz = new Eskiz("","");
         $result = $eskiz->requestSmsSend(
             '4546',
             'Afisha Market uchun maxsus tasdiqlovchi kodingiz: ' . $code . PHP_EOL . ' Kodni hech kimga bermang!',
@@ -122,7 +122,7 @@ class AuthController extends Controller
 
         $code = mt_rand(10000, 99999);
 
-        $eskiz = new Eskiz("", ->re();
+        $eskiz = new Eskiz("","");
         $result = $eskiz->requestSmsSend(
             '4546',
             'Afisha Market uchun maxsus tasdiqlovchi kodingiz: ' . $code . PHP_EOL . ' Kodni hech kimga bermang!',
