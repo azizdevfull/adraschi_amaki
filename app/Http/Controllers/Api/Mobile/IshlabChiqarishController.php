@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 
 class IshlabChiqarishController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $ishlab_chiqarishlar = ishlabChiqarishTuri::all();
 
         return response()->json([

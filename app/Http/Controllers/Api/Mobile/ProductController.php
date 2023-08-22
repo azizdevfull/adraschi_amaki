@@ -25,19 +25,19 @@ class ProductController extends Controller
         $perPage = 20;
         $page = intval($request->query('page')) ?? 1;
         $offset = ($page - 1) * $perPage;
-    
+
         $products = Product::orderBy('created_at', 'desc')
             ->offset($offset)
             ->limit($perPage)
             ->get();
-    
+
         $total = Product::count();
-    
+
         $lastPage = ceil($total / $perPage);
-    
+
         $prevPageUrl = $page > 1 ? $request->fullUrlWithQuery(['page' => $page - 1]) : null;
         $nextPageUrl = $page < $lastPage ? $request->fullUrlWithQuery(['page' => $page + 1]) : null;
-    
+
         return response()->json([
             'status' => true,
             'message' => __('product.all_success'),
@@ -47,17 +47,17 @@ class ProductController extends Controller
                     'prevPageUrl' => $prevPageUrl,
                     'nextPageUrl' => $nextPageUrl
                 ],
-                '_meta' =>[
+                '_meta' => [
                     'total' => $total,
                     'perPage' => $perPage,
                     'currentPage' => $page,
                     'lastPage' => $lastPage,
                 ]
-    
+
             ]
         ], 200);
     }
-    
+
 
 
 
@@ -110,11 +110,11 @@ class ProductController extends Controller
 
         $username = $user->username; // Assuming the username field exists in the User model
         $folder = 'products/' . $username;
-    
+
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
                 $path = $photo->store($folder, 'public');
-    
+
                 $product->photos()->create([
                     'url' => Storage::disk('public')->url($path),
                     'public_id' => $folder, // Remove this line as it's specific to Cloudinary
@@ -132,7 +132,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request,string $id)
+    public function show(Request $request, string $id)
     {
         $product = Product::find($id);
         if (!$product) {
@@ -163,92 +163,92 @@ class ProductController extends Controller
         ], 200);
     }
 
-/**
- * Update the specified resource in storage.
- */
-public function update(Request $request, string $id)
-{
-    $validator = Validator::make($request->all(), [
-        // 'title' => 'string|max:255',
-        // 'price' => 'string',
-        // 'body' => 'string',
-        // 'category_id' => 'exists:categories,id',
-        // 'region_id' => 'nullable|exists:regions,id',
-        // 'color' => 'nullable|string|max:255',
-        // 'compatibility' => 'nullable|string',
-        // 'longitude' => 'string',
-        // 'latitude' => 'string',
-        // 'photos' => 'array|max:4',
-        // 'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'title' => 'string|max:255',
+            // 'price' => 'string',
+            // 'body' => 'string',
+            // 'category_id' => 'exists:categories,id',
+            // 'region_id' => 'nullable|exists:regions,id',
+            // 'color' => 'nullable|string|max:255',
+            // 'compatibility' => 'nullable|string',
+            // 'longitude' => 'string',
+            // 'latitude' => 'string',
+            // 'photos' => 'array|max:4',
+            // 'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
-        'category_id' => 'exists:categories,id',
-        'price' => 'string',
-        'discount' => 'nullable|string',
-        'eni' => 'string',
-        'gramm' => 'string',
-        'boyi' => 'string',
-        'size' => 'string',
-        'color' => 'string|max:255',
-        // 'ishlab_chiqarish_turi' => 'required',
-        'ishlab_chiqarish_turi' => 'exists:ishlab_chiqarish_turis,id',
-        // 'mahsulot_turi' => 'required',
-        'mahsulot_tola_id' => 'exists:mahsulot_tolas,id',
-        'brand' => 'string',
-        'photos' => 'array|max:4',
-        'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-    ]);
+            'category_id' => 'exists:categories,id',
+            'price' => 'string',
+            'discount' => 'nullable|string',
+            'eni' => 'string',
+            'gramm' => 'string',
+            'boyi' => 'string',
+            'size' => 'string',
+            'color' => 'string|max:255',
+            // 'ishlab_chiqarish_turi' => 'required',
+            'ishlab_chiqarish_turi' => 'exists:ishlab_chiqarish_turis,id',
+            // 'mahsulot_turi' => 'required',
+            'mahsulot_tola_id' => 'exists:mahsulot_tolas,id',
+            'brand' => 'string',
+            'photos' => 'array|max:4',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
 
-    if ($validator->fails()) {
-        return response([
-            'status' => 'error',
-            'message' => $validator->errors()
-        ], 422);
-    }
+        if ($validator->fails()) {
+            return response([
+                'status' => 'error',
+                'message' => $validator->errors()
+            ], 422);
+        }
 
-    $product = Product::find($id);
+        $product = Product::find($id);
 
-    if (!$product) {
-        return response([
-            'status' => 'error',
-            'message' => __('product.not_found')
-        ], 404);
-    }
+        if (!$product) {
+            return response([
+                'status' => 'error',
+                'message' => __('product.not_found')
+            ], 404);
+        }
 
-    $user = Auth::user();
+        $user = Auth::user();
 
-    if ($product->user_id !== $user->id) {
-        return response([
-            'status' => 'error',
-            'message' => __('product.no_access_update')
-        ], 403);
-    }
+        if ($product->user_id !== $user->id) {
+            return response([
+                'status' => 'error',
+                'message' => __('product.no_access_update')
+            ], 403);
+        }
 
-    $product->category_id = $request->input('category_id', $product->category_id);
-    $product->price = $request->input('price', $product->price);
-    $product->discount = $request->input('discount', $product->discount);
-    $product->eni = $request->input('eni', $product->eni);
-    $product->gramm = $request->input('gramm', $product->gramm);
-    $product->boyi = $request->input('boyi', $product->boyi);
-    $product->size = $request->input('size', $product->size);
-    $product->color = $request->input('color', $product->color);
-    $product->ishlab_chiqarish_turi_id = $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id);
-    $product->mahsulot_tola_id = $request->input('mahsulot_tola_id', $product->mahsulot_tola_id);
-    $product->brand = $request->input('brand', $product->brand);
+        $product->category_id = $request->input('category_id', $product->category_id);
+        $product->price = $request->input('price', $product->price);
+        $product->discount = $request->input('discount', $product->discount);
+        $product->eni = $request->input('eni', $product->eni);
+        $product->gramm = $request->input('gramm', $product->gramm);
+        $product->boyi = $request->input('boyi', $product->boyi);
+        $product->size = $request->input('size', $product->size);
+        $product->color = $request->input('color', $product->color);
+        $product->ishlab_chiqarish_turi_id = $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id);
+        $product->mahsulot_tola_id = $request->input('mahsulot_tola_id', $product->mahsulot_tola_id);
+        $product->brand = $request->input('brand', $product->brand);
 
-    // $product->save();
+        // $product->save();
 
         // $username = $user->username; // Assuming the username field exists in the User model
         // $folder = 'products/' . $username;
-    
+
         if ($request->hasFile('photos')) {
             // Delete existing photos
             foreach ($product->photos as $photo) {
                 // Extract the filename from the URL
                 $filename = basename($photo->url);
-                
+
                 // Delete the photo file from storage
                 Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
-                
+
                 // Delete the photo record from the database
                 $photo->delete();
             }
@@ -257,25 +257,25 @@ public function update(Request $request, string $id)
             // Upload and store new photos
             foreach ($request->file('photos') as $photo) {
                 $path = $photo->store($folder, 'public');
-                
+
                 $product->photos()->create([
                     'url' => Storage::disk('public')->url($path),
                     'public_id' => $folder, // Remove this line as it's specific to Cloudinary
                 ]);
             }
         }
-    
-
-    $product->save();
-    $product->refresh(); // Refresh the model to get the updated timestamps
 
 
-    return response([
-        'status' => true,
-        'message' => __('product.update_success'),
-        'data' => new ProductResource($product)
-    ], 200);
-}
+        $product->save();
+        $product->refresh(); // Refresh the model to get the updated timestamps
+
+
+        return response([
+            'status' => true,
+            'message' => __('product.update_success'),
+            'data' => new ProductResource($product)
+        ], 200);
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -291,21 +291,21 @@ public function update(Request $request, string $id)
             ], 404);
         }
 
-       // $user = Auth::user();
+        // $user = Auth::user();
 
         //if ($product->user_id !== $user->id) {
-          //  return response([
-            //    'status' => 'error',
-              //  'message' => __('product.no_access_delete')
-            //], 403);
+        //  return response([
+        //    'status' => 'error',
+        //  'message' => __('product.no_access_delete')
+        //], 403);
         //}
         foreach ($product->photos as $photo) {
             // Extract the filename from the URL
             $filename = basename($photo->url);
-            
+
             // Delete the photo file from storage
             Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
-            
+
             // Delete the photo record from the database
             $photo->delete();
         }
@@ -316,6 +316,4 @@ public function update(Request $request, string $id)
             'message' => __('product.destroy_success')
         ], 200);
     }
-
-
 }

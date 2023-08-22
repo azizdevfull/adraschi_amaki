@@ -15,4 +15,5 @@ class Photo extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    
 }

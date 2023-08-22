@@ -15,12 +15,11 @@ class GhostViewsController extends Controller
             'ip' => $request->ip(),
             'user_agent' => $request->header('User-Agent'),
         ])->get();
-    
-        $products = $existingViews->pluck('product'); // Assuming the relationship is correctly defined
-    
+
+        $products = $existingViews->pluck('product');
+
         return response()->json([
             'products' => ProductResource::collection($products)
         ]);
     }
-    
 }
