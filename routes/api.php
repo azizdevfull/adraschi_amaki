@@ -39,10 +39,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::middleware('localization')->prefix('mobile')->group(function () {
-    
+
     // Ghost routes
     Route::get('/last-views', [GhostViewsController::class, 'index']);
-    
+
     // Home Routes
     Route::get('/home', [HomeController::class, 'home']);
     Route::get('/ishlab-chiqarishlar', [IshlabChiqarishController::class, 'index']);
@@ -85,15 +85,6 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
 
         Route::get('/users/favorites', [ProfileController::class, 'favourites']);
-
-        Route::post('/products', [ProductController::class, 'store']);
-        Route::post('/pay', [PaymentController::class, 'pay']);
-        Route::post('/products/{product}', [ProductController::class, 'update']);
-        Route::put('/products/{product}', [ProductController::class, 'update']);
-        Route::patch('/products/{product}', [ProductController::class, 'update']);
-        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
-        Route::post('/products/{product}/favorite', [ProductController::class, 'toggleFavorite']);
-        Route::delete('/products/{product}/favorite', [ProductController::class, 'removeFavorite']);
     });
 
     // Profile Routes
@@ -106,15 +97,23 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
     // Admin Routes
     Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
-        Route::apiResource('users-categories', AdminUserCategoryController::class);
-        Route::apiResource('categories', CategoryController::class);
-        Route::apiResource('regions', RegionController::class);
-        Route::post('products/{products}', [AdminProductsController::class, 'update']);
-        Route::apiResource('products', AdminProductsController::class);
-        Route::post('users/{user}', [AdminUsersController::class, 'update']);
-        Route::apiResource('users', AdminUsersController::class);
-        // Route::apiResource('reklama', ReklamaController::class);
-        Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
-        Route::apiResource('payment-secrets', PaymentSecretController::class);
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::post('/pay', [PaymentController::class, 'pay']);
+        Route::post('/products/{product}', [ProductController::class, 'update']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::patch('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+        Route::post('/products/{product}/favorite', [ProductController::class, 'toggleFavorite']);
+        Route::delete('/products/{product}/favorite', [ProductController::class, 'removeFavorite']);
+        // Route::apiResource('users-categories', AdminUserCategoryController::class);
+        // Route::apiResource('categories', CategoryController::class);
+        // Route::apiResource('regions', RegionController::class);
+        // Route::post('products/{products}', [AdminProductsController::class, 'update']);
+        // Route::apiResource('products', AdminProductsController::class);
+        // Route::post('users/{user}', [AdminUsersController::class, 'update']);
+        // Route::apiResource('users', AdminUsersController::class);
+        // // Route::apiResource('reklama', ReklamaController::class);
+        // Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
+        // Route::apiResource('payment-secrets', PaymentSecretController::class);
     });
 });
