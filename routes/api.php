@@ -82,7 +82,14 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
 
-
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::post('/pay', [PaymentController::class, 'pay']);
+        Route::post('/products/{product}', [ProductController::class, 'update']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::patch('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+        Route::post('/products/{product}/favorite', [ProductController::class, 'toggleFavorite']);
+        Route::delete('/products/{product}/favorite', [ProductController::class, 'removeFavorite']);
 
         Route::get('/users/favorites', [ProfileController::class, 'favourites']);
     });
