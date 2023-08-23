@@ -28,6 +28,13 @@ class IshlabChiqarishSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'Yarim Tayyor',
+                'rus_name' => 'Половина готовности',
+                'en_name' => 'Half ready',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
