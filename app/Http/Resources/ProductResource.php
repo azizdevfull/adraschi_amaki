@@ -25,7 +25,6 @@ class ProductResource extends JsonResource
             'discount' => $this->discount,
             'eni' => $this->eni,
             'boyi' => $this->boyi,
-            'size' => $this->size,
             'gramm' => $this->gramm,
             'color' => $this->color,
             'ishlab_chiqarish_turi' => $this->getLocalizedIshlabChiqarishTuriName(),
