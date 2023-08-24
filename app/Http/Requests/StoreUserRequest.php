@@ -26,19 +26,12 @@ class StoreUserRequest extends FormRequest
         User::whereNull('phone_verified_at')
         ->where('created_at', '<=', Carbon::now()->subMinute(5))
         ->delete();
- 
+
         return [
-            'fullname' => 'nullable|string|min:3|max:255',
+            'first_name' => 'required|string|min:3|max:255',
+            'last_name' => 'required|string|min:3|max:255',
             'username' => 'required|string|min:3|max:255|unique:users',
             'phone' => ['required','string','unique:users'],
-            'admin_user_category_id' =>['nullable','integer',
-            Rule::exists('admin_user_categories', 'id'),
-            ],
-            'viloyat'=>'required|string',
-            'rus_viloyat'=>'required|string',
-            'tuman'=>'required|string',
-            'rus_tuman'=>'required|string',
-            'avatar' => 'required|image|max:2048',
             'password' => 'required|string|min:6|confirmed',
         ];
     }
