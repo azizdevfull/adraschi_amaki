@@ -97,13 +97,11 @@ class ProductController extends Controller
             'user_agent' => $request->header('User-Agent'),
         ])->first();
         if (!$existingView) {
-            // Create a new view record
             $view = new GhostViews([
                 'ip' => $request->ip(),
                 'user_agent' => $request->header('User-Agent'),
             ]);
 
-            // Associate the view with the post
             $product->ghost_views()->save($view);
         }
 
@@ -113,9 +111,6 @@ class ProductController extends Controller
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
@@ -190,8 +185,7 @@ class ProductController extends Controller
 
 
         $product->save();
-        $product->refresh(); // Refresh the model to get the updated timestamps
-
+        $product->refresh();
 
         return response([
             'status' => true,
@@ -200,9 +194,6 @@ class ProductController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $product = $this->productService->getProduct($id);
