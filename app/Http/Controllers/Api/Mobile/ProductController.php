@@ -2,30 +2,22 @@
 
 namespace App\Http\Controllers\Api\Mobile;
 
-use Carbon\Carbon;
-use App\Models\Region;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProductResource;
-use App\Models\GhostViews;
+use App\Services\GhostViewsService;
 use App\Services\ProductService;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends Controller
 {
 
-    public function __construct(protected ProductService $productService)
+    public function __construct(protected ProductService $productService, protected GhostViewsService $ghostViewsService)
     {
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $perPage = 20;
@@ -60,17 +52,10 @@ class ProductController extends Controller
             ]
         ], 200);
     }
-
-
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProductRequest $request)
     {
 
-        $product = $this->productService->add($request->category_id, $request->price, $request->discount, $request->eni, $request->gramm, $request->boyi, $request->color, $request->ishlab_chiqarish_turi_id, $request->mahsulot_tola_id, $request->brand, $request->created_at, $request->hasFile('photos'), $request->file('photos'));
+        $product = $this->productService->add($request->category_id, $request->price, $request->discount, $request->eni, $request->gramm, $request->boyi, $request->color, $request->ishlab_chiqarish_turi_id, $request->mahsulot_tola_id, $request->brand, $request->hasFile('photos'), $request->file('photos'));
 
         return response([
             'status' => true,
@@ -91,17 +76,9 @@ class ProductController extends Controller
                 'message' => __('product.not_found')
             ], 404);
         }
-        $existingView = GhostViews::where([
-            'product_id' => $product->id,
-            'ip' => $request->ip(),
-            'user_agent' => $request->header('User-Agent'),
-        ])->first();
+        $existingView = $this->ghostViewsService->getExistingView($product, $request->ip(), $request->header('User-Agent'));
         if (!$existingView) {
-            $view = new GhostViews([
-                'ip' => $request->ip(),
-                'user_agent' => $request->header('User-Agent'),
-            ]);
-
+            $view = $this->ghostViewsService->add($request->ip(), $request->header('User-Agent'));
             $product->ghost_views()->save($view);
         }
 
@@ -111,30 +88,8 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, string $id)
     {
-        $validator = Validator::make($request->all(), [
-            'category_id' => 'exists:categories,id',
-            'price' => 'string',
-            'discount' => 'nullable|string',
-            'eni' => 'nullable|string',
-            'gramm' => 'string',
-            'boyi' => 'nullable|string',
-            'color' => 'string|max:255',
-            'ishlab_chiqarish_turi' => 'exists:ishlab_chiqarish_turis,id',
-            'mahsulot_tola_id' => 'exists:mahsulot_tolas,id',
-            'brand' => 'string',
-            'photos' => 'array|max:4',
-            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
-        if ($validator->fails()) {
-            return response([
-                'status' => 'error',
-                'message' => $validator->errors()
-            ], 422);
-        }
-
         $product = $this->productService->getProduct($id);
 
         if (!$product) {
@@ -153,39 +108,7 @@ class ProductController extends Controller
             ], 403);
         }
 
-        $product->category_id = $request->input('category_id', $product->category_id);
-        $product->price = $request->input('price', $product->price);
-        $product->discount = $request->input('discount', $product->discount);
-        $product->eni = $request->input('eni', $product->eni);
-        $product->gramm = $request->input('gramm', $product->gramm);
-        $product->boyi = $request->input('boyi', $product->boyi);
-        $product->color = $request->input('color', $product->color);
-        $product->ishlab_chiqarish_turi_id = $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id);
-        $product->mahsulot_tola_id = $request->input('mahsulot_tola_id', $product->mahsulot_tola_id);
-        $product->brand = $request->input('brand', $product->brand);
-        if ($request->hasFile('photos')) {
-            foreach ($product->photos as $photo) {
-                $filename = basename($photo->url);
-
-                Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
-
-                $photo->delete();
-            }
-            $username = $user->username; // Assuming the username field exists in the User model
-            $folder = 'products/' . $username;
-            foreach ($request->file('photos') as $photo) {
-                $path = $photo->store($folder, 'public');
-
-                $product->photos()->create([
-                    'url' => Storage::disk('public')->url($path),
-                    'public_id' => $folder, // Remove this line as it's specific to Cloudinary
-                ]);
-            }
-        }
-
-
-        $product->save();
-        $product->refresh();
+        $this->productService->update($user, $product, $request->input('category_id', $product->category_id), $request->input('price', $product->price), $request->input('discount', $product->discount), $request->input('eni', $product->eni), $request->input('gramm', $product->gramm), $request->input('boyi', $product->boyi), $request->input('color', $product->color), $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id), $request->input('mahsulot_tola_id', $product->mahsulot_tola_id), $request->input('brand', $product->brand), $request->hasFile('photos'), $request->file('photos'));
 
         return response([
             'status' => true,
@@ -203,15 +126,9 @@ class ProductController extends Controller
                 'status' => 'error',
                 'message' => __('product.not_found')
             ], 404);
-        }
-        foreach ($product->photos as $photo) {
-            $filename = basename($photo->url);
+        } 
 
-            Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
-
-            $photo->delete();
-        }
-        $product->delete();
+        $this->productService->destroy($product);
 
         return response([
             'status' => true,
