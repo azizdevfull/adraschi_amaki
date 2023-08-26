@@ -7,9 +7,11 @@ use App\Models\Region;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProductResource;
 use App\Models\GhostViews;
+use App\Services\ProductService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -17,26 +19,27 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 class ProductController extends Controller
 {
 
+    public function __construct(protected ProductService $productService)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $perPage = 20;
-        $page = intval($request->query('page')) ?? 1;
-        $offset = ($page - 1) * $perPage;
+        $page = $this->productService->getPage($request->query('page'));
+        $offset = $this->productService->getOffset($page, $perPage);
 
-        $products = Product::orderBy('created_at', 'desc')
-            ->offset($offset)
-            ->limit($perPage)
-            ->get();
+        $products = $this->productService->getProducts($offset, $perPage);
 
-        $total = Product::count();
+        $total = $this->productService->getTotalProduct();
 
         $lastPage = ceil($total / $perPage);
 
-        $prevPageUrl = $page > 1 ? $request->fullUrlWithQuery(['page' => $page - 1]) : null;
-        $nextPageUrl = $page < $lastPage ? $request->fullUrlWithQuery(['page' => $page + 1]) : null;
+        $prevPageUrl = $this->productService->getPrevPageUrl($page, $request->fullUrlWithQuery(['page' => $page - 1]));
+        $nextPageUrl = $this->productService->getNextPageUrl($page, $request->fullUrlWithQuery(['page' => $page + 1]), $lastPage);
 
         return response()->json([
             'status' => true,
@@ -64,61 +67,10 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|string',
-            'discount' => 'nullable|string',
-            'eni' => 'nullable|string',
-            'gramm' => 'required|string',
-            'boyi' => 'nullable|string',
-            'color' => 'required|string|max:255',
-            // 'ishlab_chiqarish_turi' => 'required',
-            'ishlab_chiqarish_turi' => 'required|exists:ishlab_chiqarish_turis,id',
-            // 'mahsulot_turi' => 'required',
-            'mahsulot_tola_id' => 'required|exists:mahsulot_tolas,id',
-            'brand' => 'required',
-            'photos' => 'array|max:4',
-            'photos.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-        if ($validator->fails()) {
-            return response([
-                'status' => 'error',
-                'message' => $validator->errors()
-            ], 422);
-        }
 
-        $user = Auth::user();
-        $product = new Product();
-        $product->category_id = $request->category_id;
-        $product->price = $request->price;
-        $product->discount = $request->discount;
-        $product->eni = $request->eni;
-        $product->gramm = $request->gramm;
-        $product->boyi = $request->boyi;
-        $product->color = $request->color;
-        $product->ishlab_chiqarish_turi_id = $request->ishlab_chiqarish_turi;
-        $product->mahsulot_tola_id = $request->mahsulot_tola_id;
-        $product->brand = $request->brand;
-        $product->created_at = Carbon::now();
-        $product->user_id = $user->id;
-        $product->save();
-        $product->refresh();
-
-        $username = $user->username; // Assuming the username field exists in the User model
-        $folder = 'products/' . $username;
-
-        if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $photo) {
-                $path = $photo->store($folder, 'public');
-
-                $product->photos()->create([
-                    'url' => Storage::disk('public')->url($path),
-                    'public_id' => $folder, // Remove this line as it's specific to Cloudinary
-                ]);
-            }
-        }
+        $product = $this->productService->add($request->category_id, $request->price, $request->discount, $request->eni, $request->gramm, $request->boyi, $request->color, $request->ishlab_chiqarish_turi_id, $request->mahsulot_tola_id, $request->brand, $request->created_at, $request->hasFile('photos'), $request->file('photos'));
 
         return response([
             'status' => true,
@@ -132,7 +84,7 @@ class ProductController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $product = Product::find($id);
+        $product = $this->productService->getProduct($id);
         if (!$product) {
             return response([
                 'status' => 'error',
@@ -167,18 +119,6 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            // 'title' => 'string|max:255',
-            // 'price' => 'string',
-            // 'body' => 'string',
-            // 'category_id' => 'exists:categories,id',
-            // 'region_id' => 'nullable|exists:regions,id',
-            // 'color' => 'nullable|string|max:255',
-            // 'compatibility' => 'nullable|string',
-            // 'longitude' => 'string',
-            // 'latitude' => 'string',
-            // 'photos' => 'array|max:4',
-            // 'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
             'category_id' => 'exists:categories,id',
             'price' => 'string',
             'discount' => 'nullable|string',
@@ -186,9 +126,7 @@ class ProductController extends Controller
             'gramm' => 'string',
             'boyi' => 'nullable|string',
             'color' => 'string|max:255',
-            // 'ishlab_chiqarish_turi' => 'required',
             'ishlab_chiqarish_turi' => 'exists:ishlab_chiqarish_turis,id',
-            // 'mahsulot_turi' => 'required',
             'mahsulot_tola_id' => 'exists:mahsulot_tolas,id',
             'brand' => 'string',
             'photos' => 'array|max:4',
@@ -202,7 +140,7 @@ class ProductController extends Controller
             ], 422);
         }
 
-        $product = Product::find($id);
+        $product = $this->productService->getProduct($id);
 
         if (!$product) {
             return response([
@@ -230,27 +168,16 @@ class ProductController extends Controller
         $product->ishlab_chiqarish_turi_id = $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id);
         $product->mahsulot_tola_id = $request->input('mahsulot_tola_id', $product->mahsulot_tola_id);
         $product->brand = $request->input('brand', $product->brand);
-
-        // $product->save();
-
-        // $username = $user->username; // Assuming the username field exists in the User model
-        // $folder = 'products/' . $username;
-
         if ($request->hasFile('photos')) {
-            // Delete existing photos
             foreach ($product->photos as $photo) {
-                // Extract the filename from the URL
                 $filename = basename($photo->url);
 
-                // Delete the photo file from storage
                 Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
 
-                // Delete the photo record from the database
                 $photo->delete();
             }
             $username = $user->username; // Assuming the username field exists in the User model
             $folder = 'products/' . $username;
-            // Upload and store new photos
             foreach ($request->file('photos') as $photo) {
                 $path = $photo->store($folder, 'public');
 
@@ -278,7 +205,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        $product = Product::find($id);
+        $product = $this->productService->getProduct($id);
 
         if (!$product) {
             return response([
@@ -286,23 +213,11 @@ class ProductController extends Controller
                 'message' => __('product.not_found')
             ], 404);
         }
-
-        // $user = Auth::user();
-
-        //if ($product->user_id !== $user->id) {
-        //  return response([
-        //    'status' => 'error',
-        //  'message' => __('product.no_access_delete')
-        //], 403);
-        //}
         foreach ($product->photos as $photo) {
-            // Extract the filename from the URL
             $filename = basename($photo->url);
 
-            // Delete the photo file from storage
             Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
 
-            // Delete the photo record from the database
             $photo->delete();
         }
         $product->delete();
