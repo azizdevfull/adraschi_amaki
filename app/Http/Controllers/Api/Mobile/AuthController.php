@@ -86,10 +86,8 @@ class AuthController extends Controller
 
         Cache::forget($key);
 
-        // Generate API token for the authenticated user
         $token = $user->createToken('api_token')->plainTextToken;
 
-        // Return success response with message and token
         return response()->json([
             'status' => true,
             'message' => __('auth.phone_verified'),
