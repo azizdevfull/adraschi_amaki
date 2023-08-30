@@ -42,7 +42,7 @@ class ProductService
         return Product::find($id);
     }
 
-    public function add($category_id, $price, $discount, $eni, $gramm, $boyi, $color, $ishlab_chiqarish_turi_id, $mahsulot_tola_id, $brand, $has_file, $file_photos)
+    public function add($category_id, $price, $discount, $eni, $gramm, $boyi, $color, $ishlab_chiqarish_turi_id, $mahsulot_tola_id, $brand, $has_file, $file_photos, $rulom_narx)
     {
         $user = Auth::user();
         $product = new Product();
@@ -58,6 +58,7 @@ class ProductService
         $product->brand = $brand;
         $product->created_at = Carbon::now();
         $product->user_id = $user->id;
+        $product->rulom_narx = $rulom_narx;
         $product->save();
         $product->refresh();
 
@@ -76,7 +77,7 @@ class ProductService
         }
         return $product;
     }
-    public function update($user, $product, $category_id, $price, $discount, $eni, $gramm, $boyi, $color, $ishlab_chiqarish_turi_id, $mahsulot_tola_id, $brand, $has_file, $file_photos)
+    public function update($user, $product, $category_id, $price, $discount, $eni, $gramm, $boyi, $color, $ishlab_chiqarish_turi_id, $mahsulot_tola_id, $brand, $has_file, $file_photos,$rulom_narx)
     {
         $product->category_id = $category_id;
         $product->price = $price;
@@ -88,6 +89,7 @@ class ProductService
         $product->ishlab_chiqarish_turi_id = $ishlab_chiqarish_turi_id;
         $product->mahsulot_tola_id = $mahsulot_tola_id;
         $product->brand = $brand;
+        $product->rulom_narx = $rulom_narx;
         if ($has_file) {
             foreach ($product->photos as $photo) {
                 $filename = basename($photo->url);

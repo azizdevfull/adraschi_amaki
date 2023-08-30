@@ -55,7 +55,7 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
 
-        $product = $this->productService->add($request->category_id, $request->price, $request->discount, $request->eni, $request->gramm, $request->boyi, $request->color, $request->ishlab_chiqarish_turi_id, $request->mahsulot_tola_id, $request->brand, $request->hasFile('photos'), $request->file('photos'));
+        $product = $this->productService->add($request->category_id, $request->price, $request->discount, $request->eni, $request->gramm, $request->boyi, $request->color, $request->ishlab_chiqarish_turi_id, $request->mahsulot_tola_id, $request->brand, $request->hasFile('photos'), $request->file('photos'), $request->rulom_narx);
 
         return response([
             'status' => true,
@@ -105,7 +105,7 @@ class ProductController extends Controller
             ], 403);
         }
 
-        $this->productService->update($user, $product, $request->input('category_id', $product->category_id), $request->input('price', $product->price), $request->input('discount', $product->discount), $request->input('eni', $product->eni), $request->input('gramm', $product->gramm), $request->input('boyi', $product->boyi), $request->input('color', $product->color), $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id), $request->input('mahsulot_tola_id', $product->mahsulot_tola_id), $request->input('brand', $product->brand), $request->hasFile('photos'), $request->file('photos'));
+        $this->productService->update($user, $product, $request->input('category_id', $product->category_id), $request->input('price', $product->price), $request->input('discount', $product->discount), $request->input('eni', $product->eni), $request->input('gramm', $product->gramm), $request->input('boyi', $product->boyi), $request->input('color', $product->color), $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id), $request->input('mahsulot_tola_id', $product->mahsulot_tola_id), $request->input('brand', $product->brand), $request->hasFile('photos'), $request->file('photos'), $request->rulom_narx);
 
         return response([
             'status' => true,
@@ -123,7 +123,7 @@ class ProductController extends Controller
                 'status' => 'error',
                 'message' => __('product.not_found')
             ], 404);
-        } 
+        }
 
         $this->productService->destroy($product);
 

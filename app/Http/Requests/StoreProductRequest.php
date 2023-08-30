@@ -24,6 +24,7 @@ class StoreProductRequest extends FormRequest
         return [
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|string',
+            'rulom_narx' => 'required|string',
             'discount' => 'nullable|string',
             'eni' => 'nullable|string',
             'gramm' => 'required|string',

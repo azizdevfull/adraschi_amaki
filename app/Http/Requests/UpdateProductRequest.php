@@ -24,6 +24,7 @@ class UpdateProductRequest extends FormRequest
         return [
             'category_id' => 'exists:categories,id',
             'price' => 'string',
+            'rulom_narx' => 'string',
             'discount' => 'nullable|string',
             'eni' => 'nullable|string',
             'gramm' => 'string',
