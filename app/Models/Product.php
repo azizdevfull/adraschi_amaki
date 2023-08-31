@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Like;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\Photo;
 use App\Models\Region;
@@ -77,6 +78,11 @@ class Product extends Model
     public function ghost_views(): HasMany
     {
         return $this->hasMany(GhostViews::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 
 }

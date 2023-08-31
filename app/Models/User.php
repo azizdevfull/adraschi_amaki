@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Order;
 use App\Models\Product;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
@@ -78,5 +79,9 @@ class User extends Authenticatable
         }
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 
 }

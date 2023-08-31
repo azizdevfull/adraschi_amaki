@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\Mobile\GhostViewsController;
 use App\Http\Controllers\Api\Mobile\IshlabChiqarishController;
 use App\Http\Controllers\Api\Mobile\LikeController;
 use App\Http\Controllers\Api\Mobile\MahsulotTolaController;
+use App\Http\Controllers\Api\Mobile\OrderController;
 use App\Http\Controllers\Api\Mobile\ProductSearchController;
 use App\Http\Controllers\Api\Mobile\UserCategoryController;
 
@@ -83,6 +84,9 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
     Route::post('reklama/{reklama}', [ReklamaController::class, 'update']);
 
     Route::middleware('auth:sanctum')->group(function () {
+
+        Route::post('/create-orders', [OrderController::class, 'store']);
+        Route::get('/orders', [OrderController::class, 'index']);
 
         Route::post('/products', [ProductController::class, 'store']);
         Route::post('/pay', [PaymentController::class, 'pay']);
