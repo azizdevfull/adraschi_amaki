@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Mobile\Admin\AdminProductsController;
+use App\Http\Controllers\Api\Mobile\ClickController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Mobile\AuthController;
@@ -42,7 +43,8 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
     // Ghost routes
     Route::get('/last-views', [GhostViewsController::class, 'index']);
-
+    Route::post('/payment/prepare', [ClickController::class, 'prepare']);
+    Route::post('/payment/complete', [ClickController::class, 'complete']);
     // Home Routes
     Route::get('/home', [HomeController::class, 'home']);
     Route::get('/ishlab-chiqarishlar', [IshlabChiqarishController::class, 'index']);
