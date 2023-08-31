@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClickUz;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClickController extends Controller
 {
     public function prepare(Request $request)
     {
 
-        \Log::info('Prepare',[$request->all()]);
+        // \Log::info('Prepare',[$request->all()]);
         $clickTransId = $request->input('click_trans_id');
         $serviceId = $request->input('service_id');
         $clickPaydocId = $request->input('click_paydoc_id');
@@ -21,35 +23,47 @@ class ClickController extends Controller
         $errorNote = $request->input('error_note');
         $signTime = $request->input('sign_time');
         $signString = $request->input('sign_string');
-        // \Log::info('Click Prepare signString reski:', [$signString]);
         $secretKey = 'GFwdmEQpHp5';
 
         $generatedSignString = md5($clickTransId . $serviceId . $secretKey . $merchantTransId . $amount . $action . $signTime);
 
-        // \Log::info('Click Prepare signString:', [$signString]);
-        // \Log::info('Click Prepare generatedSignString:', [$generatedSignString]);
         if ($signString !== $generatedSignString) {
             return response()->json(['error' => -1, 'error_note' => 'Invalid sign_string']);
         }
-
-        $response = [
+        
+        ClickUz::create([
             'click_trans_id' => $clickTransId,
             'merchant_trans_id' => $merchantTransId,
-            'merchant_prepare_id' => 123,
-            'error' => 0,
-            'error_note' => 'Payment prepared successfully',
-        ];
+            'amount' => $amount,
+            'amount_rub' => $amount,
+            'sign_time' => $signTime,
+            'situation' => $error
+        ]);
 
-        // Log the response data
+        if ($error == 0) {
+            $response = [
+                'click_trans_id' => $clickTransId,
+                'merchant_trans_id' => $merchantTransId,
+                'merchant_prepare_id' => $merchantTransId,
+                'error' => 0,
+                'error_note' => 'Payment prepared successfully',
+            ];
+        }else{
+            $response = [
+                'click_trans_id' => $clickTransId,
+                'merchant_trans_id' => $merchantTransId,
+                'merchant_prepare_id' => $merchantTransId,
+                'error' => -9,
+                'error_note' => 'Do not find a user!!!',
+            ];
+        }
+
         // \Log::info('Click Prepare Response:', $response);
 
         return response()->json($response);
     }
     public function complete(Request $request)
     {
-        \Log::info('Completed',[$request->all()]);
-    
-        // Extract the parameters from the request
         $clickTransId = $request->input('click_trans_id');
         $serviceId = $request->input('service_id');
         $clickPaydocId = $request->input('click_paydoc_id');
@@ -58,28 +72,20 @@ class ClickController extends Controller
         $amount = $request->input('amount');
         $action = $request->input('action');
         $error = $request->input('error');
-        // \Log::info('Click Prepare signString:', [$error]);
         $errorNote = $request->input('error_note');
         $signTime = $request->input('sign_time');
         $signString = $request->input('sign_string');
-        $secretKey = 'GFwdmEQpHp5'; // Replace with your actual SECRET_KEY
+        $secretKey = 'GFwdmEQpHp5'; 
+        // $secretKey = env('MERCHANT_KEY'); 
 
-        // \Log::info('Click Prepare signString:', [$signString]);
-        // Validate the sign_string using MD5 hash
         $generatedSignString = md5($clickTransId . $serviceId . $secretKey . $merchantTransId . $merchantPrepareId . $amount . $action . $signTime);
-        // \Log::info('Click Prepare generatedSignString:', [$generatedSignString]);
 
         if ($signString !== $generatedSignString) {
             return response()->json(['error' => -1, 'error_note' => 'Invalid sign_string']);
         }
 
-        // Perform necessary validation and processing here
-
-        // Check if the payment was successful or not
         if ($error == 0) {
-            // Payment was successful, update your database accordingly
-
-            // Return a successful response
+            ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => 1]);
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
@@ -88,10 +94,13 @@ class ClickController extends Controller
                 'error_note' => 'Payment Success'
             ]);
         } else {
-            // Payment was not successful, handle the error case
-
-            // Return an error response
-            return response()->json(['error' => -1, 'error_note' => 'Payment error']);
+            return response()->json([
+                'click_trans_id' => $clickTransId,
+                'merchant_trans_id' => $merchantTransId,
+                'merchant_confirm_id' => $merchantTransId,
+                'error' => -9,
+                'error_note' => 'Do not find a user!!!'
+            ]);
         }
     }
 }
