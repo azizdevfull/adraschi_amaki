@@ -9,12 +9,8 @@ class ClickController extends Controller
 {
     public function prepare(Request $request)
     {
-        // $secretKey = ''; // Replace with your actual secret key
 
-        // Log the request data
-        // \Log::info('Click Prepare Request:', $request->all());
-
-        // Extract parameters from the request
+        \Log::info('Prepare',[$request->all()]);
         $clickTransId = $request->input('click_trans_id');
         $serviceId = $request->input('service_id');
         $clickPaydocId = $request->input('click_paydoc_id');
@@ -51,6 +47,8 @@ class ClickController extends Controller
     }
     public function complete(Request $request)
     {
+        \Log::info('Completed',[$request->all()]);
+    
         // Extract the parameters from the request
         $clickTransId = $request->input('click_trans_id');
         $serviceId = $request->input('service_id');
