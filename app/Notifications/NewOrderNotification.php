@@ -33,7 +33,7 @@ class NewOrderNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'id' => $this->order->id,
+            'order_id' => $this->order->id,
             'user' => $this->order->user->username,
         ];
     }
