@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Mobile\Admin\AdminProductsController;
+use App\Http\Controllers\Api\Mobile\Admin\NotificationController;
 use App\Http\Controllers\Api\Mobile\ClickController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -110,6 +111,13 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
     // Admin Routes
     Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
+
+        // Notification Routes
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::get('/read-notifications', [NotificationController::class, 'readNotifications']);
+        Route::get('/unread-notifications', [NotificationController::class, 'unReadNotifications']);
+        Route::get('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+
         Route::post('/products', [ProductController::class, 'store']);
         Route::post('/pay', [PaymentController::class, 'pay']);
         Route::post('/products/{product}', [ProductController::class, 'update']);

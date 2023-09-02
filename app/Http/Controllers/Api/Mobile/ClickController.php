@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Mobile;
 use App\Http\Controllers\Controller;
 use App\Models\ClickUz;
 use App\Models\Order;
+use App\Models\User;
+use App\Notifications\NewOrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -87,7 +89,11 @@ class ClickController extends Controller
 
         if ($error == 0) {
             ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => 1, 'status' => 'success']);
-            Order::where('id', $merchantTransId)->update(['status' => 'yakunlandi']);
+            $order = Order::where('id', $merchantTransId)->update(['status' => 'yakunlandi']);
+            $adminUsers = User::where('role', 1)->get();
+            foreach ($adminUsers as $admin) {
+                $admin->notify(new NewOrderNotification($order));
+            }
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
