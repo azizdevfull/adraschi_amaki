@@ -14,9 +14,8 @@ class OrderController extends Controller
 
     public function index()
     {
-        $merchantTransId = '2';
-        return Order::where('id', $merchantTransId)->get();
-
+        $orders = Order::with(['product', 'user'])->orderBy('created_at', 'desc')->get();
+        return OrderResource::collection($orders);
     }
     public function store(Request $request)
     {
