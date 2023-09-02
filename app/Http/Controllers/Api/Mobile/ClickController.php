@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClickUz;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -85,7 +86,8 @@ class ClickController extends Controller
         }
 
         if ($error == 0) {
-            ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => 1]);
+            ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => 1, 'status' => 'success']);
+            Order::where('id', $merchantTransId)->update(['status' =>'yakunlandi']);
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
@@ -94,6 +96,7 @@ class ClickController extends Controller
                 'error_note' => 'Payment Success'
             ]);
         } else {
+            Order::where('id', $merchantTransId)->update(['status' =>'bekor qilingan']);
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
