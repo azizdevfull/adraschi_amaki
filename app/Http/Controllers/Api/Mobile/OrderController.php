@@ -12,11 +12,6 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
 
-    public function index()
-    {
-        $orders = Order::with(['product', 'user'])->orderBy('created_at', 'desc')->get();
-        return OrderResource::collection($orders);
-    }
     public function store(Request $request)
     {
         $validatedData = $request->validate([
