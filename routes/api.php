@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Mobile\IshlabChiqarishController;
 use App\Http\Controllers\Api\Mobile\LikeController;
 use App\Http\Controllers\Api\Mobile\MahsulotTolaController;
 use App\Http\Controllers\Api\Mobile\OrderController;
+use App\Http\Controllers\Api\Mobile\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Mobile\ProductSearchController;
 use App\Http\Controllers\Api\Mobile\UserCategoryController;
 
@@ -111,6 +112,10 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
     // Admin Routes
     Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
+
+        // Orders Routes
+        Route::get('/orders', [AdminOrderController::class, 'index']);
+        Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
 
         // Notification Routes
         Route::get('/notifications', [NotificationController::class, 'index']);
