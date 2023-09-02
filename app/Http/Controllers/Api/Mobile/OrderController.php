@@ -14,8 +14,9 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::with(['product', 'user'])->orderBy('created_at', 'desc')->get();
-        return OrderResource::collection($orders);
+        $merchantTransId = '2';
+        return Order::where('id', $merchantTransId)->get();
+
     }
     public function store(Request $request)
     {
@@ -40,7 +41,6 @@ class OrderController extends Controller
 
         // Generate Click URL for payment
         $clickUrl = $this->generateClickUrl($order->id, $orderTotal);
-        dd($clickUrl);
         return response()->json([
             'message' => 'Order placed successfully',
             'click_url' => $clickUrl,

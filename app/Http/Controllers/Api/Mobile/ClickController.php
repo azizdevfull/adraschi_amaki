@@ -87,7 +87,7 @@ class ClickController extends Controller
 
         if ($error == 0) {
             ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => 1, 'status' => 'success']);
-            Order::where('id', $merchantTransId)->update(['status' =>'yakunlandi']);
+            Order::where('id', $merchantTransId)->update(['status' => 'yakunlandi']);
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
@@ -96,7 +96,8 @@ class ClickController extends Controller
                 'error_note' => 'Payment Success'
             ]);
         } else {
-            Order::where('id', $merchantTransId)->update(['status' =>'bekor qilingan']);
+            ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => -9, 'status' => 'error']);
+            Order::where('id', $merchantTransId)->update(['status' => 'bekor qilingan']);
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
