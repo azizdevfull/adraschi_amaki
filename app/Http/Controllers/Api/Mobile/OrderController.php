@@ -39,10 +39,10 @@ class OrderController extends Controller
         $order->save();
 
         // Generate Click URL for payment
-        // $clickUrl = $this->generateClickUrl($order->id, $orderTotal);
+        $clickUrl = $this->generateClickUrl($order->id, $orderTotal);
         return response()->json([
             'message' => 'Order placed successfully',
-            // 'click_url' => $clickUrl,
+            'click_url' => $clickUrl,
         ], 201);
     }
 
