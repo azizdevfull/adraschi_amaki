@@ -115,6 +115,7 @@ Route::middleware('localization')->prefix('mobile')->group(function () {
 
         // Orders Routes
         Route::get('/orders', [AdminOrderController::class, 'index']);
+        Route::put('/orders/{id}', [AdminOrderController::class, 'qabul']);
         Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
 
         // Notification Routes

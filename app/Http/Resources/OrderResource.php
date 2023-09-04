@@ -20,6 +20,7 @@ class OrderResource extends JsonResource
             'id' => $this->id,
             'total' => $this->total,
             'status' => $this->status,
+            'qabul' => $this->qabul,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'user' => new ProfileResource($this->user),
