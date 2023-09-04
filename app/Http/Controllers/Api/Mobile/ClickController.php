@@ -89,17 +89,29 @@ class ClickController extends Controller
 
         if ($error == 0) {
             ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => 1, 'status' => 'success']);
-            $order = Order::where('id', $merchantTransId)->update([ 'status' => 'success']); // Retrieve the Order
+            // $order = Order::where('id', $merchantTransId)->update([ 'status' => 'success']); // Retrieve the Order
+            // if ($order) {
+            // //     $order->update(['status' => 'yakunlandi']);
+            
+            //     $adminUsers = User::where('role', 1)->get();
+            
+            //     foreach ($adminUsers as $admin) {
+            //         $admin->notify(new NewOrderNotification($order)); // Notify each admin with the Order instance
+            //     }
+            
+            // }
+            $order = Order::find($merchantTransId);
+
             if ($order) {
-            //     $order->update(['status' => 'yakunlandi']);
-            
+                // Update the order status
+                $order->update(['status' => 'success']);
+    
+                // Notify admin users
                 $adminUsers = User::where('role', 1)->get();
-            
+    
                 foreach ($adminUsers as $admin) {
-                    $admin->notify(new NewOrderNotification($order)); // Notify each admin with the Order instance
+                    $admin->notify(new NewOrderNotification($order));
                 }
-            
-            }
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
