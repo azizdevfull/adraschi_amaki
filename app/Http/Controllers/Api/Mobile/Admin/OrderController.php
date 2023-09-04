@@ -11,7 +11,8 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::where('status', 'yakunlandi')->with(['product', 'user'])->orderBy('created_at', 'desc')->get();
+        // $orders = Order::where('status', 'yakunlandi')->with(['product', 'user'])->orderBy('created_at', 'desc')->get();
+        $orders = Order::with('products')->get();
         return response()->json(['data' => OrderResource::collection($orders)]);
     }
     public function show($id)
