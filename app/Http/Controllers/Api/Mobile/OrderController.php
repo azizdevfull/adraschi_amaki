@@ -15,31 +15,47 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'products' => 'required|array',
+            'products.*.id' => 'required|exists:products,id',
+            'products.*.quantity' => 'required|integer|min:1',
         ]);
-
-        $product = Product::findOrFail($request->product_id);
+    
+        // Assuming you are using authentication, get the authenticated user
         $user = auth()->user();
-
-        // Calculate order total based on product price and quantity
-        $orderTotal = $product->price * $request->quantity;
-
+    
         // Create the order
         $order = new Order();
         $order->user_id = $user->id;
-        $order->product_id = $product->id;
-        $order->quantity = $validatedData['quantity'];
-        $order->total = $orderTotal;
         $order->save();
-
+    
+        $totalAmount = 0; // Initialize the total amount
+    
+        foreach ($validatedData['products'] as $productData) {
+            $product = Product::findOrFail($productData['id']);
+            $quantity = $productData['quantity'];
+            $total = $product->price * $quantity;
+    
+            // Attach the product to the order with quantity and total
+            $order->products()->attach($product->id, ['quantity' => $quantity, 'total' => $total]);
+    
+            // Update the total amount
+            $totalAmount += $total;
+        }
+    
+        // Update the order's total with the calculated total amount
+        $order->total = $totalAmount;
+        $order->save();
+    
         // Generate Click URL for payment
-        $clickUrl = $this->generateClickUrl($order->id, $orderTotal);
+        $clickUrl = $this->generateClickUrl($order->id, $totalAmount);
+    
         return response()->json([
             'message' => 'Order placed successfully',
             'click_url' => $clickUrl,
         ], 201);
     }
+    
+    
 
     public function generateClickUrl($order_id, $orderTotal)
     {

@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Product extends Model
 {
     use HasFactory, MediaAlly;
-    protected $fillable = ['category_id','discount','rulom_narx','price','sifat','eni','gramm','boyi','color','ishlab_chiqarish_turi_id','mahsulot_tola_id','brand','user_id'];
+    protected $fillable = ['category_id', 'discount', 'rulom_narx', 'price', 'sifat', 'eni', 'gramm', 'boyi', 'color', 'ishlab_chiqarish_turi_id', 'mahsulot_tola_id', 'brand', 'user_id'];
 
     public function user()
     {
@@ -40,7 +40,11 @@ class Product extends Model
     {
         return $this->belongsTo(ishlabChiqarishTuri::class);
     }
-
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class)
+            ->withPivot('quantity');
+    }
     public function photos()
     {
         return $this->hasMany(Photo::class);
@@ -63,7 +67,7 @@ class Product extends Model
 
     public function toggleFavorite(Product $product)
     {
-        if($this->favorites()->where('product_id', $product->id)->exists()){
+        if ($this->favorites()->where('product_id', $product->id)->exists()) {
             $this->favorites()->attach($product);
         } else {
             $this->favorites()->attach($product);
@@ -78,11 +82,6 @@ class Product extends Model
     public function ghost_views(): HasMany
     {
         return $this->hasMany(GhostViews::class);
-    }
-
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
     }
 
 }
