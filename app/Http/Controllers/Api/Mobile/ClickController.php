@@ -33,7 +33,7 @@ class ClickController extends Controller
         if ($signString !== $generatedSignString) {
             return response()->json(['error' => -1, 'error_note' => 'Invalid sign_string']);
         }
-        
+
         ClickUz::create([
             'click_trans_id' => $clickTransId,
             'merchant_trans_id' => $merchantTransId,
@@ -51,7 +51,7 @@ class ClickController extends Controller
                 'error' => 0,
                 'error_note' => 'Payment prepared successfully',
             ];
-        }else{
+        } else {
             $response = [
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
@@ -78,7 +78,7 @@ class ClickController extends Controller
         $errorNote = $request->input('error_note');
         $signTime = $request->input('sign_time');
         $signString = $request->input('sign_string');
-        $secretKey = 'GFwdmEQpHp5'; 
+        $secretKey = 'GFwdmEQpHp5';
         // $secretKey = env('MERCHANT_KEY'); 
 
         $generatedSignString = md5($clickTransId . $serviceId . $secretKey . $merchantTransId . $merchantPrepareId . $amount . $action . $signTime);
@@ -89,17 +89,8 @@ class ClickController extends Controller
 
         if ($error == 0) {
             ClickUz::where('click_trans_id', $clickTransId)->update(['situation' => 1, 'status' => 'success']);
-            $order = Order::where('id', $merchantTransId)->first(); // Retrieve the Order
-            if ($order) {
-                $order->update(['status' => 'yakunlandi']);
+            Order::where('id', $merchantTransId)->update(['status' => 'success']); // Retrieve the Order
             
-                $adminUsers = User::where('role', 1)->get();
-            
-                foreach ($adminUsers as $admin) {
-                    $admin->notify(new NewOrderNotification($order)); // Notify each admin with the Order instance
-                }
-            
-            }
             return response()->json([
                 'click_trans_id' => $clickTransId,
                 'merchant_trans_id' => $merchantTransId,
