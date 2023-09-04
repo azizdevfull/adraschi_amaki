@@ -20,7 +20,7 @@ return [
         'numeric' => ':attribute maydoni :min va :max orasida bo\'lishi kerak.',
         'string' => ':attribute maydoni :min va :max belgilar orasida bo\'lishi kerak.',
     ],
-    'boolean' => ':attribute maydoni haqiqiy yoki yolg\'on bo\'lishi kerak.',
+    'boolean' => ':attribute maydoni true yoki false bo\'lishi kerak.',
     'confirmed' => ':attribute maydoni tasdiqlash mos kelmaydi.',
     'current_password' => 'Parol noto\'g\'ri.',
     'date' => ':attribute maydoni haqiqiy sana bo\'lishi kerak.',
