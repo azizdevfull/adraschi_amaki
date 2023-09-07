@@ -263,7 +263,7 @@ class PaymeController extends Controller
                     ->update([
                         'state' => 2,
                         'perform_time' => $ldate,
-                        'perform_time_unix' => $currentMillis
+                        'perform_time_unix' => str_replace('.', '', $currentMillis)
                     ]);
                 $transaction = DB::table('transactions')
                     ->where('paycom_transaction_id', $req->params['id'])
@@ -284,7 +284,7 @@ class PaymeController extends Controller
                 $response = [
                     'result' => [
                         'transaction' => "{$transaction->id}",
-                        'perform_time' => intval($transaction->perform_time_unix * 1000),
+                        'perform_time' => intval($transaction->perform_time_unix),
                         'state' => intval($transaction->state)
                     ]
                 ];
