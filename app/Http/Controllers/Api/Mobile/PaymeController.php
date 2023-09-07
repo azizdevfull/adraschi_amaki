@@ -145,7 +145,7 @@ class PaymeController extends Controller
 
                     return response()->json([
                         "result" => [
-                            'create_time' => $req->params['time'],
+                            'create_time' => $newTransaction->paycom_time,
                             'transaction' => strval($newTransaction->id),
                             'state' => $newTransaction->state
                         ]
