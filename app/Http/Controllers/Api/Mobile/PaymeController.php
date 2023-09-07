@@ -129,20 +129,22 @@ class PaymeController extends Controller
                     ];
                     return json_encode($response);
                 } elseif (count($ts) == 0) {
+                    $paycomTimeInSeconds = $req->params['time'] / 1000;
                     DB::table('transactions')
-                        ->insert([
-                            'paycom_transaction_id' => $req->params['id'],
-                            'paycom_time' => round($req->params['time'] / 1000),
-                            'paycom_time_datetime' => $new,
-                            'amount' => $req->params['amount'],
-                            'state' => 1,
-                            'order_id' => "{$account['order_id']}"
-                        ]);
+                    ->insert([
+                        'paycom_transaction_id' => $req->params['id'],
+                        'paycom_time' => $paycomTimeInSeconds, // Store as UNIX timestamp in seconds
+                        'paycom_time_datetime' => $new,
+                        'amount' => $req->params['amount'],
+                        'state' => 1,
+                        'order_id' => "{$account['order_id']}"
+                    ]);
+                
                     $transaction = DB::table('transactions')
                         ->latest()
                         ->first();
-                    \Log::info(['paycom_time', $transaction->paycom_time]);
-                    \Log::info(['request time', $req->params['time']]);
+                    \Log::info(['paycom_time',$transaction->paycom_time]);
+                    \Log::info(['request time',$req->params['time']]);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
