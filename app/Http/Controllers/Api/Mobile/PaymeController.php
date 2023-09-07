@@ -138,7 +138,7 @@ class PaymeController extends Controller
                         ->insert([
                             'paycom_transaction_id' => $req->params['id'],
                             'paycom_time' => $req->params['time'],
-                            'paycom_time_datetime' => $new,
+                            'paycom_time_datetime' => $req->params['time'],
                             'amount' => $req->params['amount'],
                             'state' => 1,
                             'order_id' => "{$account['order_id']}"
@@ -146,7 +146,7 @@ class PaymeController extends Controller
                     $transaction = DB::table('transactions')
                         ->latest()
                         ->first();
-                    \Log::info($transaction);
+                    // \Log::info($transaction);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
