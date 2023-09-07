@@ -141,7 +141,7 @@ class PaymeController extends Controller
                             'paycom_time_datetime' => $new,
                             'amount' => $req->params['amount'],
                             'state' => 1,
-                            'phone' => "{$account['phone']}"
+                            'order_id' => "{$account['order_id']}"
                         ]);
                     $transaction = DB::table('transactions')
                         ->latest()
