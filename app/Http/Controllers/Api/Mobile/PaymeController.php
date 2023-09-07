@@ -153,7 +153,7 @@ class PaymeController extends Controller
                         "result" => [
                             'create_time' => $req->params['time'],
                             'transaction' => strval($transaction->id),
-                            'state' => intval($transaction->state)
+                            'state' => $transaction->state
                         ]
                     ]);
                 } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
