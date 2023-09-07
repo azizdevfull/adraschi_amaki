@@ -213,6 +213,18 @@ class PaymeController extends Controller
                         // 'perform_time' => 0,
                     ]
                 ]);
+            }else if ($transaction->state == 1) {
+                return response()->json([
+                    "result" => [
+                        'create_time' => intval($transaction->paycom_time),
+                        'perform_time' => intval($transaction->perform_time_unix),
+                        'cancel_time' => 0,
+                        'transaction' => strval($transaction->id),
+                        'state' => intval($transaction->state),
+                        'reason' => $transaction->reason
+                        // 'perform_time' => 0,
+                    ]
+                ]);
             }
             //  else if ($transaction->state == -2) {
 
