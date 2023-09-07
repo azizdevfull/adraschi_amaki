@@ -14,12 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class PaymeController extends Controller
 {
-    protected int $minAmount = 1_000;
-    protected int $maxAmount = 100_000_000_00;
 
-    protected int $timeout = 6000 * 1000;
-
-    protected string $identity = 'order_id';
 
     public function payme(Request $req)
     {
@@ -386,8 +381,5 @@ class PaymeController extends Controller
         }
     }
 
-    protected function microtime(): int
-    {
-        return (time() * 1000);
-    }
+
 }
