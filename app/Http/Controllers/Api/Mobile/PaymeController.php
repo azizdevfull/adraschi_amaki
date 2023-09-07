@@ -146,8 +146,8 @@ class PaymeController extends Controller
                     $transaction = DB::table('transactions')
                         ->latest()
                         ->first();
-                    \Log::info(['paycom_time', $transaction->paycom_time]);
-                    \Log::info(['request time', $req->params['time']]);
+                    // \Log::info(['paycom_time', $transaction->paycom_time]);
+                    // \Log::info(['request time', $req->params['time']]);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
@@ -201,7 +201,7 @@ class PaymeController extends Controller
                         'perform_time' => intval($transaction->perform_time_unix),
                         'cancel_time' => intval($transaction->cancel_time),
                         'transaction' => strval($transaction->id),
-                        'state' => $transaction->state,
+                        'state' => intval($transaction->state),
                         'reason' => $transaction->reason
                         // 'perform_time' => 0,
                     ]
@@ -213,7 +213,7 @@ class PaymeController extends Controller
                         'perform_time' => intval($transaction->perform_time_unix),
                         'cancel_time' => 0,
                         'transaction' => strval($transaction->id),
-                        'state' => $transaction->state,
+                        'state' => intval($transaction->state),
                         'reason' => $transaction->reason
                         // 'perform_time' => 0,
                     ]
@@ -237,7 +237,7 @@ class PaymeController extends Controller
                         'perform_time' => intval($transaction->perform_time_unix),
                         'cancel_time' => 0,
                         'transaction' => strval($transaction->id),
-                        'state' => $transaction->state,
+                        'state' => intval($transaction->state),
                         'reason' => null
                     ]
                 ]);
