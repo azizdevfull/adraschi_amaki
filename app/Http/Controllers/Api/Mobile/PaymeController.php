@@ -157,12 +157,12 @@ class PaymeController extends Controller
                     $insertedTransaction = Transaction::latest()->first();
 
                     \Log::info([$insertedTransaction]);
-                    
+
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
-                            'transaction' => strval($transaction->id),
-                            'state' => intval($transaction->state)
+                            'transaction' => strval($insertedTransaction->id),
+                            'state' => intval($insertedTransaction->state)
                         ]
                     ]);
                 } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
