@@ -22,6 +22,8 @@ use App\Http\Controllers\Api\Mobile\LikeController;
 use App\Http\Controllers\Api\Mobile\MahsulotTolaController;
 use App\Http\Controllers\Api\Mobile\OrderController;
 use App\Http\Controllers\Api\Mobile\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Api\Mobile\PaymeController;
+use App\Http\Controllers\Api\Mobile\PaymeControllerTest;
 use App\Http\Controllers\Api\Mobile\ProductSearchController;
 use App\Http\Controllers\Api\Mobile\UserCategoryController;
 
@@ -43,6 +45,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::middleware('localization')->prefix('mobile')->group(function () {
+
+    // Payme Controller 
+    // Route::post('/payme', [PaymeController::class, 'payme']);
+    Route::post('/payme', [PaymeControllerTest::class, 'payme']);
 
     // Ghost routes
     Route::get('/last-views', [GhostViewsController::class, 'index']);

@@ -79,7 +79,7 @@ class OrderController extends Controller
        
         $merchant_id = '64ef2f2d9f1e571160d52f76';
         $amount = $amount . '00';
-        $params = "m={$merchant_id};ac.order_id={$order_id};a={$amount};"; // Use $amount_decimal
+        $params = "m={$merchant_id};ac.order_id={$order_id};a={$amount};"; 
         $encode_params = base64_encode(utf8_encode($params));
         $url = self::LINK . '/' . $encode_params;
         return $url;
