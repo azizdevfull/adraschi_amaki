@@ -241,7 +241,7 @@ class PaymeControllerTest extends Controller
         } elseif ($req->method == "PerformTransaction") {
             $ldate = date('Y-m-d H:i:s');
             $t = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
-            \Log::info($t->state);
+            // \Log::info($t->state);
             if (empty($t)) {
                 $response = [
                     'id' => $req->id,
@@ -292,9 +292,6 @@ class PaymeControllerTest extends Controller
                 ];
                 return json_encode($response);
             }
-
-
-
         } elseif ($req->method == "CancelTransaction") {
             $ldate = date('Y-m-d H:i:s');
             $t = DB::table('transactions')
@@ -361,249 +358,34 @@ class PaymeControllerTest extends Controller
                 ];
             }
             return json_encode($response);
+        } elseif ($req->method == "GetStatement") {
+            $response = [
+                'id' => $req->id,
+                'error' => [
+                    'code' => -32504,
+                    'message' => "Недостаточно привилегий для выполнения метода"
+                ]
+            ];
+            return json_encode($response);
+        } elseif ($req->method == "ChangePassword") {
+            $response = [
+                'id' => $req->id,
+                'error' => [
+                    'code' => -32504,
+                    'message' => "Недостаточно привилегий для выполнения метода"
+                ]
+            ];
+            return json_encode($response);
         }
     }
 
-    private function handleCheckPerformTransaction(Request $request)
-    {
-        if (!$request->params['account'] || !$request->params['amount']) {
-            return response()->json([
-                'error' => [
-                    'code' => -32600,
-                    'message' => [
-                        "uz" => "Notog`ri JSON-RPC obyekt yuborilgan.",
-                        "ru" => "Передан неправильный JSON-RPC объект.",
-                        "en" => "Handed the wrong JSON-RPC object."
-                    ]
-                ]
-            ]);
-        }
 
-        $amount = $request->params['amount'];
-        if (!$this->isValidAmount($amount)) {
-            return response()->json([
-                'error' => [
-                    'code' => -31001,
-                    'message' => [
-                        "uz" => "Notug'ri summa.",
-                        "ru" => "Неверная сумма.",
-                        "en" => "Wrong amount.",
-                    ]
-                ]
-            ]);
-        }
 
-        $order = Order::find($request->params['account']['order_id']);
-        if (!$order) {
-            return response()->json([
-                'error' => [
-                    'code' => -31050,
-                    'message' => [
-                        "uz" => "Order Topilmadi.",
-                        "ru" => "Передан неправильный JSON-RPC объект.",
-                        "en" => "Handed the wrong JSON-RPC object."
-                    ]
-                ]
-            ]);
-        }
 
-        return $this->successCheckPerformTransaction();
-    }
-
-    private function handleCreateTransaction(Request $request)
-    {
-        if (!$request->params['id'] || !$request->params['time'] || !$request->params['account'] || !$request->params['amount']) {
-            throw new PaymeException(PaymeException::USER_NOT_FOUND);
-        }
-
-        $id = $request->params['id'];
-        $time = $request->params['time'];
-        $amount = $request->params['amount'];
-        $account = $request->params['account'];
-        $order_account = $request->params['account']['order_id'];
-
-        if (!array_key_exists($this->identity, $account)) {
-            throw new PaymeException(PaymeException::USER_NOT_FOUND);
-        }
-
-        $order = Order::where('id', $order_account)->first();
-
-        if (!$order) {
-            return response()->json([
-                'error' => [
-                    'code' => -31050,
-                    'message' => [
-                        "uz" => "Order Topilmadi.",
-                        "ru" => "Передан неправильный JSON-RPC объект.",
-                        "en" => "Handed the wrong JSON-RPC object."
-                    ]
-                ]
-            ]);
-        }
-
-        if (!$this->isValidAmount($amount)) {
-            return response()->json([
-                'error' => [
-                    'code' => -31001,
-                    'message' => [
-                        "uz" => "Notug'ri summa.",
-                        "ru" => "Неверная сумма.",
-                        "en" => "Wrong amount.",
-                    ]
-                ]
-            ]);
-        }
-
-        $transaction = PaymeTransaction::where('transaction', $id)->first();
-
-        if ($transaction) {
-            if (($transaction->state == PaymeState::Pending || $transaction->state == PaymeState::Done) && $transaction->transaction !== $request->params['id']) {
-                throw new PaymeException(PaymeException::USER_NOT_FOUND);
-            }
-            if (!$this->checkTimeout($transaction->create_time)) {
-                $transaction->update([
-                    'state' => PaymeState::Cancelled,
-                    'reason' => 4
-                ]);
-
-                throw new PaymeException(error: PaymeException::CANT_PERFORM_TRANS, customMessage: [
-                    "uz" => "Vaqt tugashi o'tdi",
-                    "ru" => "Тайм-аут прошел",
-                    "en" => "Timeout passed"
-                ]);
-            }
-
-            return $this->successCreateTransaction(
-                $transaction->create_time,
-                $transaction->id,
-                $transaction->state
-            );
-        }
-        $transaction = PaymeTransaction::where('transaction', $id)->first();
-        if ($transaction) {
-            if ($transaction->state != PaymeState::Pending) {
-                return response()->json([
-                    'error' => [
-                        'code' => -31008,
-                        'message' => 'Error'
-                    ]
-                ]);
-            }
-        } elseif ($transaction->isExpired()) {
-        }
-
-        $transaction = PaymeTransaction::create([
-            'transaction' => $id,
-            'payme_time' => $time,
-            'amount' => $amount,
-            'state' => PaymeState::Pending,
-            'create_time' => $this->microtime(),
-            'owner_id' => $order_account,
-            'order_id' => $order_account,
-        ]);
-
-        return $this->successCreateTransaction(
-            $transaction->create_time,
-            $transaction->id,
-            $transaction->state
-        );
-    }
-    public function successCancelTransaction($state, $cancelTime, $transaction)
-    {
-        return $this->success([
-            "state" => $state,
-            "cancel_time" => intval($cancelTime),
-            "transaction" => strval($transaction)
-        ]);
-    }
-    private function handleCheckTransaction(Request $request)
-    {
-        if (!$request->params['id']) {
-            throw new PaymeException(PaymeException::JSON_RPC_ERROR);
-        }
-
-        $id = $request->params['id'];
-
-        $transaction = PaymeTransaction::where('transaction', $id)->first();
-
-        if ($transaction) {
-            return $this->successCheckTransaction(
-                $transaction->create_time,
-                $transaction->perform_time,
-                $transaction->cancel_time,
-                $transaction->id,
-                $transaction->state,
-                $transaction->reason
-            );
-        } else {
-            throw new PaymeException(PaymeException::TRANS_NOT_FOUND);
-        }
-    }
 
 
     protected function microtime(): int
     {
         return (time() * 1000);
-    }
-
-    private function checkTimeout($created_time): bool
-    {
-        return $this->microtime() <= ($created_time + $this->timeout);
-    }
-
-    public function isValidAmount($amount): bool
-    {
-        if ($amount < $this->minAmount || $amount > $this->maxAmount) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function successCreateTransaction($createTime, $transaction, $state)
-    {
-        return $this->success([
-            'create_time' => $createTime,
-            'perform_time' => 0,
-            'cancel_time' => 0,
-            'transaction' => strval($transaction),
-            'state' => $state,
-            'reason' => null
-        ]);
-    }
-
-    public function successCheckPerformTransaction()
-    {
-        return $this->success([
-            "allow" => true
-        ]);
-    }
-
-    public function successCheckTransaction($createTime, $performTime, $cancelTime, $transaction, $state, $reason)
-    {
-        return $this->success([
-            "create_time" => $createTime ?? 0,
-            "perform_time" => $performTime ?? 0,
-            "cancel_time" => $cancelTime ?? 0,
-            "transaction" => strval($transaction),
-            "state" => $state,
-            "reason" => $reason
-        ]);
-    }
-
-    public function success($result): JsonResponse
-    {
-        return response()->json([
-            'jsonrpc' => '2.0',
-            'result' => $result,
-        ]);
-    }
-
-    public function error($error): JsonResponse
-    {
-        return response()->json([
-            'jsonrpc' => '2.0',
-            'error' => $error,
-        ]);
     }
 }
