@@ -157,7 +157,7 @@ class PaymeController extends Controller
                         ]
                     ]);
                 } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
-                    \Log::info($ts[0]);
+                    \Log::info([$ts]);
                     
                     $response = [
                         'result' => [
