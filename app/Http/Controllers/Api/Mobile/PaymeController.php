@@ -103,7 +103,6 @@ class PaymeController extends Controller
                 $account = $a;
                 $order_id = $req->params['account']['order_id'];
                 $ts = Transaction::where('order_id', $order_id)->where('state', 1)->get();
-                \Log::info([ count($ts)]);
                 if (empty($order)) {
                     $response = [
                         'id' => $req->id,
@@ -158,6 +157,8 @@ class PaymeController extends Controller
                         ]
                     ]);
                 } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
+                    \Log::info($ts[0]);
+                    
                     $response = [
                         'result' => [
                             "create_time" => $req->params['time'],
