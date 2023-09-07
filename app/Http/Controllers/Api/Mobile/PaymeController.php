@@ -144,9 +144,7 @@ class PaymeController extends Controller
                             'order_id' => "{$account['order_id']}"
                         ]);
 
-                    $transaction = DB::table('transactions')
-                        ->latest()
-                        ->first();
+                    $transaction = Transaction::orderBy('id', 'desc')->first();
                     \Log::info([$transaction]);
                     // \Log::info(['request time', $req->params['time']]);
                     return response()->json([
@@ -158,7 +156,7 @@ class PaymeController extends Controller
                     ]);
                 } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
                     // \Log::info([$ts]);
-                    
+
                     $response = [
                         'result' => [
                             "create_time" => $req->params['time'],
