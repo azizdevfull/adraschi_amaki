@@ -262,7 +262,7 @@ class PaymeController extends Controller
                     ->update([
                         'state' => 2,
                         'perform_time' => $ldate,
-                        'perform_time_unix' => intval(microtime(true) * 1000)
+                        'perform_time_unix' => $this->microtime()
                     ]);
                 $transaction = DB::table('transactions')
                     ->where('paycom_transaction_id', $req->params['id'])
@@ -385,5 +385,11 @@ class PaymeController extends Controller
             ];
             return json_encode($response);
         }
+    }
+
+
+    protected function microtime(): int
+    {
+        return (time() * 1000);
     }
 }
