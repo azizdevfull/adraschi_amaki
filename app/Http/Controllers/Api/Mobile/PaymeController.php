@@ -134,16 +134,15 @@ class PaymeController extends Controller
                     ];
                     return json_encode($response);
                 } elseif (count($ts) == 0) {
-                    $newTransaction = Transaction::create([
-                        'paycom_transaction_id' => $req->params['id'],
-                        'paycom_time' => $req->params['time'],
-                        'paycom_time_datetime' => $new,
-                        'amount' => $req->params['amount'],
-                        'state' => 1,
-                        'order_id' => $account['order_id'],
-                    ]);
+                    $newTransaction = new Transaction();
+                    $newTransaction->paycom_transaction_id = $req->params['id'];
+                    $newTransaction->paycom_time = $req->params['time'];
+                    $newTransaction->paycom_time_datetime = $new;
+                    $newTransaction->amount = $req->params['amount'];
+                    $newTransaction->state = 1;
+                    $newTransaction->order_id = $account['order_id'];
+                    $newTransaction->save();
 
-                    $newTransaction->update(['paycom_time' => $req->params['time']]);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
