@@ -147,15 +147,15 @@ class PaymeController extends Controller
                         "result" => [
                             'create_time' => $req->params['time'],
                             'transaction' => strval($transaction->id),
-                            'state' => intval($transaction->state)
+                            'state' => $transaction->state
                         ]
                     ]);
-                } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == round($req->params['time'] / 1000)) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
+                } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
                     $response = [
                         'result' => [
                             "create_time" => $req->params['time'],
                             "transaction" => "{$ts[0]->id}",
-                            "state" => intval($ts[0]->state)
+                            "state" => $ts[0]->state
                         ]
                     ];
 
@@ -209,18 +209,6 @@ class PaymeController extends Controller
                         'cancel_time' => 0,
                         'transaction' => strval($transaction->id),
                         'state' => $transaction->state,
-                        'reason' => $transaction->reason
-                        // 'perform_time' => 0,
-                    ]
-                ]);
-            }else if ($transaction->state == 1) {
-                return response()->json([
-                    "result" => [
-                        'create_time' => intval($transaction->paycom_time),
-                        'perform_time' => intval($transaction->perform_time_unix),
-                        'cancel_time' => 0,
-                        'transaction' => strval($transaction->id),
-                        'state' => intval($transaction->state),
                         'reason' => $transaction->reason
                         // 'perform_time' => 0,
                     ]
