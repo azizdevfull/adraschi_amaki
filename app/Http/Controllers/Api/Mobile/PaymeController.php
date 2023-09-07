@@ -284,7 +284,7 @@ class PaymeController extends Controller
                 $response = [
                     'result' => [
                         'transaction' => "{$transaction->id}",
-                        'perform_time' => intval($transaction->perform_time_unix),
+                        'perform_time' => intval($transaction->perform_time_unix * 1000),
                         'state' => intval($transaction->state)
                     ]
                 ];
