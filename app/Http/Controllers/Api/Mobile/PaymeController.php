@@ -103,7 +103,7 @@ class PaymeController extends Controller
                 $account = $a;
                 $order_id = $req->params['account']['order_id'];
                 $ts = Transaction::where('order_id', $order_id)->where('state', 1)->get();
-                \Log::info(['Transaction: ',$ts, 'Request: ', $req->params['account'] ]);
+                \Log::info([ count($ts)]);
                 if (empty($order)) {
                     $response = [
                         'id' => $req->id,
