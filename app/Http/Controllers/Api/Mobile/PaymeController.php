@@ -257,12 +257,13 @@ class PaymeController extends Controller
                 ];
                 return json_encode($response);
             } elseif ($t->state == 1) {
+                $currentMillis = intval(microtime(true) * 1000);
                 DB::table('transactions')
                     ->where('paycom_transaction_id', $req->params['id'])
                     ->update([
                         'state' => 2,
                         'perform_time' => $ldate,
-                        'perform_time_unix' => $this->microtime()
+                        'perform_time_unix' => $currentMillis
                     ]);
                 $transaction = DB::table('transactions')
                     ->where('paycom_transaction_id', $req->params['id'])
