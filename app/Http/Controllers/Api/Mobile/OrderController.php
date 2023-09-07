@@ -78,7 +78,7 @@ class OrderController extends Controller
     public static function generatePaymeUrl($order_id,$amount)
     {
        
-        $merchant_id = '64ef2f2d9f1e571160d52f76';
+        $merchant_id = config('payme.merchant_id');
         $amount = $amount . '00';
         $params = "m={$merchant_id};ac.order_id={$order_id};a={$amount};"; 
         $encode_params = base64_encode(utf8_encode($params));
