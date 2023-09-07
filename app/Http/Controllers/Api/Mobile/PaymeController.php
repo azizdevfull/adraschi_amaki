@@ -317,11 +317,12 @@ class PaymeController extends Controller
                 ];
                 return json_encode($response);
             } elseif ($t->state == 1) {
+                $currentMillis = intval(microtime(true) * 1000);
                 DB::table('transactions')
                     ->where('paycom_transaction_id', $req->params['id'])
                     ->update([
                         'reason' => $req->params['reason'],
-                        'cancel_time' => intval(microtime(true) * 1000),
+                        'cancel_time' => str_replace('.', '', $currentMillis),
                         'state' => -1
                     ]);
                 $t = DB::table('transactions')
@@ -332,7 +333,7 @@ class PaymeController extends Controller
                     ->update(['status' => 'bekor qilindi']);
                 $response = [
                     'result' => [
-                        "state" => $t->state,
+                        "state" => intval($t->state),
                         "cancel_time" => intval($t->cancel_time),
                         "transaction" => "{$t->id}"
                     ]
@@ -340,7 +341,7 @@ class PaymeController extends Controller
             } elseif (($t->state == -1) or ($t->state == -2)) {
                 $response = [
                     'result' => [
-                        "state" => $t->state,
+                        "state" => intval($t->state),
                         "cancel_time" => intval($t->cancel_time),
                         "transaction" => "{$t->id}"
                     ]
@@ -361,8 +362,8 @@ class PaymeController extends Controller
                     ->update(['status' => 'bajarildi']);
                 $response = [
                     'result' => [
-                        "state" => $t->state,
-                        "cancel_time" => $t->cancel_time,
+                        "state" => intval($t->state),
+                        "cancel_time" => intval($t->cancel_time),
                         "transaction" => "{$t->id}"
                     ]
                 ];
