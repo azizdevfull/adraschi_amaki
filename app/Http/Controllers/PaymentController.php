@@ -225,7 +225,8 @@ class PaymentController extends Controller
                     ]
                 ];
                 return json_encode($response);
-            } else {
+            }
+             else {
                 $response = [
                     'result' => [
                         "create_time" => $transaction->paycom_time,

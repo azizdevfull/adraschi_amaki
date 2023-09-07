@@ -36,7 +36,7 @@ class PaymeControllerTest extends Controller
             } else {
                 $a = $req->params['account'];
                 $t = Order::where('id', $a['order_id'])->first();
-                \Log::info($t->total);
+                // \Log::info($t->total);
                 if (empty($t)) {
                     $response = [
                         'id' => $req->id,
@@ -189,6 +189,18 @@ class PaymeControllerTest extends Controller
                     ]
                 ];
                 return json_encode($response);
+            } else if ($transaction->state == -1) {
+                return response()->json([
+                    "result" => [
+                        'create_time' => intval($transaction->paycom_time),
+                        'perform_time' => intval($transaction->perform_time_unix),
+                        'cancel_time' => intval($transaction->cancel_time),
+                        'transaction' => strval($transaction->id),
+                        'state' => $transaction->state,
+                        'reason' => $transaction->reason
+                        // 'perform_time' => 0,
+                    ]
+                ]);
             } else if ($transaction->state == 2) {
                 return response()->json([
                     "result" => [
@@ -197,15 +209,27 @@ class PaymeControllerTest extends Controller
                         'cancel_time' => 0,
                         'transaction' => strval($transaction->id),
                         'state' => $transaction->state,
-                        'reason' => null
+                        'reason' => $transaction->reason
                         // 'perform_time' => 0,
                     ]
                 ]);
-            } else {
+            }
+            //  else if ($transaction->state == -2) {
+
+            //     $transaction->update(['state' => 2]);
+
+            //     return response()->json([
+            //         'result' => [
+            //             'code' => -31003,
+            //             'message' => "Транзакция не найдена."
+            //         ]
+            //     ]);
+            // }
+            else {
                 $response =  response()->json([
                     "result" => [
                         'create_time' => intval($transaction->paycom_time),
-                        'perform_time' => 0,
+                        'perform_time' => intval($transaction->perform_time_unix),
                         'cancel_time' => 0,
                         'transaction' => strval($transaction->id),
                         'state' => $transaction->state,
@@ -217,7 +241,7 @@ class PaymeControllerTest extends Controller
         } elseif ($req->method == "PerformTransaction") {
             $ldate = date('Y-m-d H:i:s');
             $t = Transaction::where('paycom_transaction_id', $req->params['id'])->first();
-
+            \Log::info($t->state);
             if (empty($t)) {
                 $response = [
                     'id' => $req->id,
@@ -257,12 +281,82 @@ class PaymeControllerTest extends Controller
                         'state' => $transaction->state
                     ]
                 ];
+                return json_encode($response);
             } elseif ($t->state == 2) {
                 $response = [
                     'result' => [
                         'transaction' => "{$t->id}",
                         'perform_time' => intval($t->perform_time_unix),
                         'state' => $t->state
+                    ]
+                ];
+                return json_encode($response);
+            }
+
+
+
+        } elseif ($req->method == "CancelTransaction") {
+            $ldate = date('Y-m-d H:i:s');
+            $t = DB::table('transactions')
+                ->where('paycom_transaction_id', $req->params['id'])
+                ->first();
+            if (empty($t)) {
+                $response = [
+                    'id' => $req->id,
+                    'error' => [
+                        'code' => -32504,
+                        'message' => "Недостаточно привилегий для выполнения метода"
+                    ]
+                ];
+                return json_encode($response);
+            } elseif ($t->state == 1) {
+                DB::table('transactions')
+                    ->where('paycom_transaction_id', $req->params['id'])
+                    ->update([
+                        'reason' => $req->params['reason'],
+                        'cancel_time' => intval(microtime(true) * 1000),
+                        'state' => -1
+                    ]);
+                $t = DB::table('transactions')
+                    ->where('paycom_transaction_id', $req->params['id'])
+                    ->first();
+                DB::table('orders')
+                    ->where('id', $t->order_id)
+                    ->update(['status' => 'bekor qilindi']);
+                $response = [
+                    'result' => [
+                        "state" => $t->state,
+                        "cancel_time" => intval($t->cancel_time),
+                        "transaction" => "{$t->id}"
+                    ]
+                ];
+            } elseif (($t->state == -1) or ($t->state == -2)) {
+                $response = [
+                    'result' => [
+                        "state" => $t->state,
+                        "cancel_time" => intval($t->cancel_time),
+                        "transaction" => "{$t->id}"
+                    ]
+                ];
+            } else {
+                DB::table('transactions')
+                    ->where('paycom_transaction_id', $req->params['id'])
+                    ->update([
+                        'reason' => $req->params['reason'],
+                        'cancel_time' => intval(microtime(true) * 1000),
+                        'state' => -2
+                    ]);
+                $t = DB::table('transactions')
+                    ->where('paycom_transaction_id', $req->params['id'])
+                    ->first();
+                DB::table('orders')
+                    ->where('id', $t->order_id)
+                    ->update(['status' => 'bajarildi']);
+                $response = [
+                    'result' => [
+                        "state" => $t->state,
+                        "cancel_time" => $t->cancel_time,
+                        "transaction" => "{$t->id}"
                     ]
                 ];
             }
@@ -414,7 +508,14 @@ class PaymeControllerTest extends Controller
             $transaction->state
         );
     }
-
+    public function successCancelTransaction($state, $cancelTime, $transaction)
+    {
+        return $this->success([
+            "state" => $state,
+            "cancel_time" => intval($cancelTime),
+            "transaction" => strval($transaction)
+        ]);
+    }
     private function handleCheckTransaction(Request $request)
     {
         if (!$request->params['id']) {
