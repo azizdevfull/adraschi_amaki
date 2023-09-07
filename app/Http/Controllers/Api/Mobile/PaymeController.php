@@ -143,7 +143,7 @@ class PaymeController extends Controller
                         'order_id' => $account['order_id'],
                     ]);
 
-                    \Log::info($newTransaction);
+                    $newTransaction->update(['paycom_time' => $req->params['time']]);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
