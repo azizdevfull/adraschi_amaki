@@ -132,7 +132,7 @@ class PaymeController extends Controller
                     DB::table('transactions')
                         ->insert([
                             'paycom_transaction_id' => $req->params['id'],
-                            'paycom_time' => $req->params['time'] / 1000,
+                            'paycom_time' => round($req->params['time'] / 1000),
                             'paycom_time_datetime' => $new,
                             'amount' => $req->params['amount'],
                             'state' => 1,
