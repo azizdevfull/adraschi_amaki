@@ -28,6 +28,7 @@ class OrderController extends Controller
         // Create the order
         $order = new Order();
         $order->user_id = $user->id;
+        $order->payment_type = $request->payment_type;
         $order->save();
 
         $totalAmount = 0; // Initialize the total amount

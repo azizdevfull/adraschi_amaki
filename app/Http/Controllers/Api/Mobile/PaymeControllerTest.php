@@ -262,6 +262,7 @@ class PaymeControllerTest extends Controller
                 $transaction = DB::table('transactions')
                     ->where('paycom_transaction_id', $req->params['id'])
                     ->first();
+                Order::where('id', $t->order_id)->update(['status' => 'yakunlandi']);
                 // $user = DB::table('users')
                 //     ->where('phone', $transaction->phone)
                 //     ->first();
@@ -283,6 +284,8 @@ class PaymeControllerTest extends Controller
                 ];
                 return json_encode($response);
             } elseif ($t->state == 2) {
+
+
                 $response = [
                     'result' => [
                         'transaction' => "{$t->id}",
