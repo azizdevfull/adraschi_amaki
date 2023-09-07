@@ -132,7 +132,7 @@ class PaymeController extends Controller
                     DB::table('transactions')
                         ->insert([
                             'paycom_transaction_id' => $req->params['id'],
-                            'paycom_time' => $req->params['time'],
+                            'paycom_time' => $req->params['time'] / 1000,
                             'paycom_time_datetime' => $new,
                             'amount' => $req->params['amount'],
                             'state' => 1,
@@ -141,8 +141,8 @@ class PaymeController extends Controller
                     $transaction = DB::table('transactions')
                         ->latest()
                         ->first();
-                    \Log::info(['paycom_time',$transaction->paycom_time]);
-                    \Log::info(['request time',$req->params['time']]);
+                    \Log::info(['paycom_time', $transaction->paycom_time]);
+                    \Log::info(['request time', $req->params['time']]);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
