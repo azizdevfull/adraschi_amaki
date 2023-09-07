@@ -103,7 +103,7 @@ class PaymeController extends Controller
                 $account = $a;
                 $order_id = $req->params['account']['order_id'];
                 $ts = Transaction::where('order_id', $order_id)->where('state', 1)->get();;
-                \Log::info(['Transaction: ',$ts, 'Request: ', $req->params['account'] ]);
+                // \Log::info(['Transaction: ',$ts, 'Request: ', $req->params['account'] ]);
                 if (empty($order)) {
                     $response = [
                         'id' => $req->id,
@@ -135,21 +135,24 @@ class PaymeController extends Controller
                     // $paycomTimeMilliseconds = $req->params['time'] % 1000 / 1000; // Extract fractions of a second
 
                     // Insert the transaction into the database
-                    DB::table('transactions')
-                        ->insert([
-                            'paycom_transaction_id' => $req->params['id'],
-                            'paycom_time' => str_replace('.', '', $req->params['time']), // Store as UNIX timestamp with fractions
-                            'paycom_time_datetime' => $new,
-                            'amount' => $req->params['amount'],
-                            'state' => 1,
-                            'order_id' => "{$account['order_id']}"
-                        ]);
-
-                    $transaction = DB::table('transactions')
-                        ->latest()
-                        ->first();
-                    \Log::info([$transaction]);
-                    // \Log::info(['request time', $req->params['time']]);
+                    // $transaction = DB::table('transactions')
+                    //     ->insert([
+                    //         'paycom_transaction_id' => $req->params['id'],
+                    //         'paycom_time' => str_replace('.', '', $req->params['time']), // Store as UNIX timestamp with fractions
+                    //         'paycom_time_datetime' => $new,
+                    //         'amount' => $req->params['amount'],
+                    //         'state' => 1,
+                    //         'order_id' => "{$account['order_id']}"
+                    //     ]);
+                    $transaction = new Transaction();
+                    $transaction->paycom_transaction_id = $req->params['id'];
+                    $transaction->paycom_time = str_replace('.', '', $req->params['time']); // Convert and round to milliseconds
+                    $transaction->paycom_time_datetime = $new;
+                    $transaction->amount = $req->params['amount'];
+                    $transaction->state = 1;
+                    $transaction->order_id = $account['order_id'];
+                    \Log::info($transaction);
+                    
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
