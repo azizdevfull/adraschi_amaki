@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->string('paycom_time_datetime', 13)->nullable()->change();
+            $table->string('paycom_time_datetime')->nullable()->change();
 
         });
     }
