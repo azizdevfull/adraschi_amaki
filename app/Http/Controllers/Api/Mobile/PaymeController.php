@@ -161,6 +161,7 @@ class PaymeController extends Controller
 
                     return json_encode($response);
                 } else {
+                    \Log::info($ts);
                     $response = [
                         'id' => $req->id,
                         'error' => [
