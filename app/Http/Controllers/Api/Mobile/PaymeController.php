@@ -163,7 +163,7 @@ class PaymeController extends Controller
                         'result' => [
                             "create_time" => $req->params['time'],
                             "transaction" => "{$ts[0]->id}",
-                            "state" => intval($ts[0]->state)
+                            "state" => $ts[0]->state
                         ]
                     ];
 
