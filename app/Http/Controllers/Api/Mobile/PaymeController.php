@@ -151,8 +151,9 @@ class PaymeController extends Controller
                     $transaction->amount = $req->params['amount'];
                     $transaction->state = 1;
                     $transaction->order_id = $account['order_id'];
+                    $transaction->save();
                     \Log::info($transaction);
-                    
+
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
