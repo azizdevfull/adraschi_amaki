@@ -135,34 +135,26 @@ class PaymeController extends Controller
                     // $paycomTimeMilliseconds = $req->params['time'] % 1000 / 1000; // Extract fractions of a second
 
                     // Insert the transaction into the database
-                    // $transaction = DB::table('transactions')
-                    //     ->insert([
-                    //         'paycom_transaction_id' => $req->params['id'],
-                    //         'paycom_time' => str_replace('.', '', $req->params['time']), // Store as UNIX timestamp with fractions
-                    //         'paycom_time_datetime' => $new,
-                    //         'amount' => $req->params['amount'],
-                    //         'state' => 1,
-                    //         'order_id' => "{$account['order_id']}"
-                    //     ]);
-                    $transaction = new Transaction();
-                    $transaction->paycom_transaction_id = $req->params['id'];
-                    $transaction->paycom_time = str_replace('.', '', $req->params['time']); // Convert and round to milliseconds
-                    $transaction->paycom_time_datetime = $new;
-                    $transaction->amount = $req->params['amount'];
-                    $transaction->state = 1;
-                    $transaction->order_id = $account['order_id'];
-                    $transaction->save();
+                    DB::table('transactions')
+                        ->insert([
+                            'paycom_transaction_id' => $req->params['id'],
+                            'paycom_time' => str_replace('.', '', $req->params['time']), // Store as UNIX timestamp with fractions
+                            'paycom_time_datetime' => $new,
+                            'amount' => $req->params['amount'],
+                            'state' => 1,
+                            'order_id' => "{$account['order_id']}"
+                        ]);
 
-                    // Retrieve the inserted transaction data
-                    $insertedTransaction = Transaction::latest()->first();
-
-                    \Log::info([$insertedTransaction]);
-
+                    $transaction = DB::table('transactions')
+                        ->latest()
+                        ->first();
+                    \Log::info([$transaction]);
+                    // \Log::info(['request time', $req->params['time']]);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
-                            'transaction' => strval($insertedTransaction->id),
-                            'state' => intval($insertedTransaction->state)
+                            'transaction' => strval($transaction->id),
+                            'state' => intval($transaction->state)
                         ]
                     ]);
                 } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
