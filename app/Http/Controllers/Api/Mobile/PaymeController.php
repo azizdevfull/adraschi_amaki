@@ -152,8 +152,12 @@ class PaymeController extends Controller
                     $transaction->state = 1;
                     $transaction->order_id = $account['order_id'];
                     $transaction->save();
-                    \Log::info($transaction);
 
+                    // Retrieve the inserted transaction data
+                    $insertedTransaction = Transaction::latest()->first();
+
+                    \Log::info([$insertedTransaction]);
+                    
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
