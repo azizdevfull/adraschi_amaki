@@ -142,15 +142,14 @@ class PaymeController extends Controller
                     $newTransaction->state = 1;
                     $newTransaction->order_id = $account['order_id'];
                     $newTransaction->save();
-
-                    $response = response()->json([
+                    \Log::info($newTransaction);
+                    return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
                             'transaction' => strval($newTransaction->id),
                             'state' => $newTransaction->state
                         ]
                     ]);
-                    return $response;
                 } elseif ((count($ts) == 1) and ($ts[0]->paycom_time == $req->params['time']) and ($ts[0]->paycom_transaction_id == $req->params['id'])) {
                     $response = [
                         'result' => [
