@@ -103,7 +103,7 @@ class PaymeController extends Controller
                 $account = $a;
                 $order_id = $req->params['account']['order_id'];
                 $ts = Transaction::where('order_id', $order_id)->where('state', 1)->get();
-                // \Log::info(['Transaction: ',$ts, 'Request: ', $req->params['account'] ]);
+                \Log::info(['Transaction: ',$ts, 'Request: ', $req->params['account'] ]);
                 if (empty($order)) {
                     $response = [
                         'id' => $req->id,
@@ -148,7 +148,7 @@ class PaymeController extends Controller
                     $transaction = DB::table('transactions')
                         ->latest()
                         ->first();
-                    \Log::info([$transaction]);
+                    // \Log::info([$transaction]);
                     // \Log::info(['request time', $req->params['time']]);
                     return response()->json([
                         "result" => [
