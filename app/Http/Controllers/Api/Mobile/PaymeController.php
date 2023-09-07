@@ -136,7 +136,7 @@ class PaymeController extends Controller
                     DB::table('transactions')
                         ->insert([
                             'paycom_transaction_id' => $req->params['id'],
-                            'paycom_time' => intval($req->params['time'] / 1000), // Store as UNIX timestamp with fractions
+                            'paycom_time' => str_replace('.', '', $req->params['time']), // Store as UNIX timestamp with fractions
                             'paycom_time_datetime' => $new,
                             'amount' => $req->params['amount'],
                             'state' => 1,
