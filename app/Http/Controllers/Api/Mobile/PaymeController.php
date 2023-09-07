@@ -216,7 +216,7 @@ class PaymeController extends Controller
                         'cancel_time' => 0,
                         'transaction' => strval($transaction->id),
                         'state' => intval($transaction->state),
-                        'reason' => intval($transaction->reason)
+                        'reason' => null,
                         // 'perform_time' => 0,
                     ]
                 ]);
