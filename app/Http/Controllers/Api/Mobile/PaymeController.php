@@ -141,8 +141,8 @@ class PaymeController extends Controller
                     $transaction = DB::table('transactions')
                         ->latest()
                         ->first();
+                    \Log::info($transaction);
                     \Log::info($req->params['time']);
-                    \Log::info($transaction->paycom_time);
                     return response()->json([
                         "result" => [
                             'create_time' => $req->params['time'],
