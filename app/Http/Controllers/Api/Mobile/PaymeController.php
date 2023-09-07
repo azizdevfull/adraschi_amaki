@@ -284,7 +284,7 @@ class PaymeController extends Controller
                     'result' => [
                         'transaction' => "{$transaction->id}",
                         'perform_time' => intval($transaction->perform_time_unix),
-                        'state' => $transaction->state
+                        'state' => intval($transaction->state)
                     ]
                 ];
                 return json_encode($response);
@@ -295,7 +295,7 @@ class PaymeController extends Controller
                     'result' => [
                         'transaction' => "{$t->id}",
                         'perform_time' => intval($t->perform_time_unix),
-                        'state' => $t->state
+                        'state' => intval($t->state)
                     ]
                 ];
                 return json_encode($response);
