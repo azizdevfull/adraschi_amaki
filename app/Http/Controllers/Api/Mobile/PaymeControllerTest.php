@@ -382,11 +382,6 @@ class PaymeControllerTest extends Controller
         }
     }
 
-
-
-
-
-
     protected function microtime(): int
     {
         return (time() * 1000);

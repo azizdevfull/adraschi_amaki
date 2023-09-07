@@ -47,8 +47,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('localization')->prefix('mobile')->group(function () {
 
     // Payme Controller 
-    // Route::post('/payme', [PaymeController::class, 'payme']);
-    Route::post('/payme', [PaymeControllerTest::class, 'payme']);
+    Route::post('/payme', [PaymeController::class, 'payme']);
+    // Route::post('/payme', [PaymeControllerTest::class, 'payme']);
 
     // Ghost routes
     Route::get('/last-views', [GhostViewsController::class, 'index']);
