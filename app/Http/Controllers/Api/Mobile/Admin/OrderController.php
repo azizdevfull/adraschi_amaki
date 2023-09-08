@@ -57,7 +57,7 @@ class OrderController extends Controller
 
             $result = $eskiz->requestSmsSend(
                 '4546',
-                'Adraschi Amaki' . PHP_EOL . 'Buyurtmangiz Qabul Qilindi!',
+                'Adraschi Amaki' . PHP_EOL . 'Buyurtmangiz Qabul Qilindi! 12-Soat Ichida Yetkazib Beriladi',
                 $order->user->phone,
                 '1',
                 ''
