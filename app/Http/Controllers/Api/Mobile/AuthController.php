@@ -34,18 +34,18 @@ class AuthController extends Controller
 
         $code = mt_rand(10000, 99999);
 
-        $eskiz = new Eskiz("dostonjontangirov412@gmail.com","SMl9YuMJxTAw3ZFqvNziN7dYimT46f8BKIu7TjyY");
+        $eskiz = new Eskiz("adraschiamaki@gmail.con", "Fz93Gm1BA6WcfnfI7i11StqWIsLiQJ9QKPSfQz3X");
         $eskiz->requestAuthLogin();
         $result = $eskiz->requestSmsSend(
             '4546',
-            'Adraschi Amaki uchun maxsus tasdiqlovchi kodingiz: ' .$code. PHP_EOL .' Kodni hech kimga bermang!',
+            'Adraschi Amaki uchun maxsus tasdiqlovchi kodingiz: ' . $code . PHP_EOL . ' Kodni hech kimga bermang!',
             $request->phone,
             '1',
             ''
         );
 
         if ($result->getResponse()->isSuccess == true) {
-            $key = 'phone_verification_'.$request->phone;
+            $key = 'phone_verification_' . $request->phone;
             Cache::put($key, $code, now()->addMinutes(5));
             return response()->json([
                 'status' => $result->getResponse()->isSuccess,
@@ -70,7 +70,7 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $key = 'phone_verification_'.$request->phone;
+        $key = 'phone_verification_' . $request->phone;
         $code = Cache::get($key);
 
         if (!$code || $request->code != $code) {
@@ -93,7 +93,7 @@ class AuthController extends Controller
             'message' => __('auth.phone_verified'),
             'token' => $token,
             'user' => new ProfileResource($user)
-            
+
         ], 200);
     }
 
@@ -102,13 +102,13 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|max:255',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-    
+
         $user = User::where('phone', $request->phone)->first();
-    
+
         if (!$user) {
             return response()->json([
                 'status' => false,
@@ -121,23 +121,23 @@ class AuthController extends Controller
                 'message' => __('auth.already_verified')
             ], 403);
         }
-    
+
         $code = mt_rand(10000, 99999);
-    
-        $eskiz = new Eskiz("dostonjontangirov412@gmail.com","SMl9YuMJxTAw3ZFqvNziN7dYimT46f8BKIu7TjyY");
+
+        $eskiz = new Eskiz("adraschiamaki@gmail.con", "Fz93Gm1BA6WcfnfI7i11StqWIsLiQJ9QKPSfQz3X");
         $eskiz->requestAuthLogin();
         $result = $eskiz->requestSmsSend(
             '4546',
-            'Adraschi Amaki uchun maxsus tasdiqlovchi kodingiz: ' .$code. PHP_EOL .' Kodni hech kimga bermang!',
+            'Adraschi Amaki uchun maxsus tasdiqlovchi kodingiz: ' . $code . PHP_EOL . ' Kodni hech kimga bermang!',
             $request->phone,
-            '1', 
+            '1',
             ''
         );
-    
+
         if ($result->getResponse()->isSuccess == true) {
-            $key = 'phone_verification_'.$request->phone;
+            $key = 'phone_verification_' . $request->phone;
             Cache::put($key, $code, now()->addMinutes(5));
-    
+
             return response()->json([
                 'status' => true,
                 'message' => __('auth.sms_sent')
@@ -149,7 +149,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
-    
+
 
     public function login(LoginUserRequest $request)
     {
@@ -197,7 +197,7 @@ class AuthController extends Controller
 
         $code = mt_rand(10000, 99999);
 
-        $eskiz = new Eskiz("dostonjontangirov412@gmail.com", "SMl9YuMJxTAw3ZFqvNziN7dYimT46f8BKIu7TjyY");
+        $eskiz = new Eskiz("adraschiamaki@gmail.con", "Fz93Gm1BA6WcfnfI7i11StqWIsLiQJ9QKPSfQz3X");
         $result = $eskiz->requestSmsSend(
             '4546',
             'Adraschi Amaki uchun maxsus tasdiqlovchi kodingiz: ' . $code . PHP_EOL . ' Kodni hech kimga bermang!',
@@ -298,7 +298,7 @@ class AuthController extends Controller
 
         $code = mt_rand(10000, 99999);
 
-        $eskiz = new Eskiz("dostonjontangirov412@gmail.com", "SMl9YuMJxTAw3ZFqvNziN7dYimT46f8BKIu7TjyY");
+        $eskiz = new Eskiz("adraschiamaki@gmail.con", "Fz93Gm1BA6WcfnfI7i11StqWIsLiQJ9QKPSfQz3X");
         $eskiz->requestAuthLogin();
         $result = $eskiz->requestSmsSend(
             '4546',

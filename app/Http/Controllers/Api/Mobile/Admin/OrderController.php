@@ -40,7 +40,7 @@ class OrderController extends Controller
                 'status' => false,
                 'message' => __('order.not_found')
             ]);
-        }else if($order->qabul == 'true'){
+        } else if ($order->qabul == 'true') {
             return response()->json([
                 'status' => false,
                 'message' => __('order.accepted')
@@ -51,7 +51,7 @@ class OrderController extends Controller
         $order->update();
         if ($order->qabul == 'true') {
 
-            $eskiz = new Eskiz("dostonjontangirov412@gmail.com", "SMl9YuMJxTAw3ZFqvNziN7dYimT46f8BKIu7TjyY");
+            $eskiz = new Eskiz("adraschiamaki@gmail.con", "Fz93Gm1BA6WcfnfI7i11StqWIsLiQJ9QKPSfQz3X");
 
             $eskiz->requestAuthLogin();
 
@@ -62,7 +62,7 @@ class OrderController extends Controller
                 '1',
                 ''
             );
-            
+
             if ($result->getResponse()->isSuccess == true) {
                 return response()->json([
                     'status' => true,
