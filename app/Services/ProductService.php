@@ -6,6 +6,7 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 
 class ProductService
@@ -65,19 +66,23 @@ class ProductService
         $username = $user->username;
         $folder = 'products/' . $username;
 
+
         if ($has_file) {
             foreach ($file_photos as $photo) {
-                $path = $photo->store($folder, 'public');
-
+                $pather = fopen($photo->getRealPath(), 'r');
+                $result = Cloudinary::upload($pather, [
+                    'folder' => 'products',
+                    'resource_type' => 'auto',
+                ]);
                 $product->photos()->create([
-                    'url' => Storage::disk('public')->url($path),
-                    'public_id' => $folder,
+                    'url' => $result->getSecurePath(),
+                    'public_id' => $result->getPublicId(),
                 ]);
             }
         }
         return $product;
     }
-    public function update($user, $product, $category_id, $price, $discount, $eni, $gramm, $boyi, $color, $ishlab_chiqarish_turi_id, $mahsulot_tola_id, $brand, $has_file, $file_photos,$rulom_narx)
+    public function update($user, $product, $category_id, $price, $discount, $eni, $gramm, $boyi, $color, $ishlab_chiqarish_turi_id, $mahsulot_tola_id, $brand, $has_file, $file_photos, $rulom_narx)
     {
         $product->category_id = $category_id;
         $product->price = $price;
@@ -93,19 +98,21 @@ class ProductService
         if ($has_file) {
             foreach ($product->photos as $photo) {
                 $filename = basename($photo->url);
-
-                Storage::disk('public')->delete('products/' . $product->user->username . '/' . $filename);
-
+                
+                Cloudinary::destroy($photo->public_id);
                 $photo->delete();
             }
             $username = $user->username; // Assuming the username field exists in the User model
             $folder = 'products/' . $username;
             foreach ($file_photos as $photo) {
-                $path = $photo->store($folder, 'public');
-
+                $pather = fopen($photo->getRealPath(), 'r');
+                $result = Cloudinary::upload($pather, [
+                    'folder' => 'products',
+                    'resource_type' => 'auto',
+                ]);
                 $product->photos()->create([
-                    'url' => Storage::disk('public')->url($path),
-                    'public_id' => $folder,
+                    'url' => $result->getSecurePath(),
+                    'public_id' => $result->getPublicId(),
                 ]);
             }
         }
