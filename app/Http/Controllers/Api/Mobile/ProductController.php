@@ -98,12 +98,12 @@ class ProductController extends Controller
 
         $user = Auth::user();
 
-        if ($product->user_id !== $user->id) {
-            return response([
-                'status' => 'error',
-                'message' => __('product.no_access_update')
-            ], 403);
-        }
+        // if ($product->user_id !== $user->id) {
+        //     return response([
+        //         'status' => 'error',
+        //         'message' => __('product.no_access_update')
+        //     ], 403);
+        // }
 
         $this->productService->update($user, $product, $request->input('category_id', $product->category_id), $request->input('price', $product->price), $request->input('discount', $product->discount), $request->input('eni', $product->eni), $request->input('gramm', $product->gramm), $request->input('boyi', $product->boyi), $request->input('color', $product->color), $request->input('ishlab_chiqarish_turi', $product->ishlab_chiqarish_turi_id), $request->input('mahsulot_tola_id', $product->mahsulot_tola_id), $request->input('brand', $product->brand), $request->hasFile('photos'), $request->file('photos'), $request->rulom_narx);
 
